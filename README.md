@@ -27,3 +27,9 @@ For any questions or inquiries about the Lotus Capital Hub Token or to join the 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Legal Documentation
+
+All legal documentation related to Lotus Capital Hub can be found on our website at https://lotuscapitalhub.com/index.php/legal/. These documents contain essential information on topics such as our stance on cryptocurrency, Anti-Money Laundering (AML) and Know Your Customer (KYC) policies, and our privacy policy.
+
+By utilizing any services, products, or platforms offered by Lotus Capital Hub, you expressly agree to comply with and be bound by our legal documentation. Please review our legal documentation thoroughly before engaging in any activities related to Lotus Capital Hub to ensure your compliance with our policies and procedures.
