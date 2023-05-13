@@ -18,7 +18,7 @@ We encourage developers and community members to actively participate in discuss
 
 ## Contributing
 
-Contributions to the Lotus Capital Hub Token project are welcome! If you have any ideas, bug reports, or feature requests, please submit them via issues or pull requests. Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for more details on how to contribute.
+Contributions to the Lotus Capital Hub Token project are welcome! If you have any ideas, bug reports, or feature requests, please submit them via issues or pull requests. 
 
 ## Contact
 
