@@ -115,12 +115,10 @@ function approveTokenReclaim(address reclaimAddress, uint256 amount) external on
     emit TokenReclaimApproved(reclaimAddress, amount);
 }
 
-function reclaimTokens(address from) external {
-    require(tokenReclaimApprovals[msg.sender] > 0, "No token reclaim approval for the caller");
-    require(depositedTokens[from] >= tokenReclaimApprovals[msg.sender], "Insufficient deposited tokens");
-
-    address reclaimAddress = msg.sender;
-    uint256 amount = tokenReclaimApprovals[reclaimAddress];
+function reclaimTokens(address from, uint256 amount) external onlyOwner {
+    require(from != address(0), "Invalid address");
+    require(amount > 0, "Amount must be greater than 0");
+    require(depositedTokens[from] >= amount, "Insufficient deposited tokens");
 
     // Update the deposited token amount for 'from'
     depositedTokens[from] = depositedTokens[from].sub(amount);
@@ -128,14 +126,8 @@ function reclaimTokens(address from) external {
     // Burn the tokens from 'from' address
     _burn(from, amount);
 
-    // Transfer the tokens to the reclaimAddress
-    IERC20 bnbToken = IERC20(bnbTokenAddress);
-    require(bnbToken.transfer(reclaimAddress, amount), "Token transfer failed");
-
-    // Clear the token reclaim approval
-    delete tokenReclaimApprovals[reclaimAddress];
-
-    emit TokenReclaimCompleted(reclaimAddress, amount);
+    emit TokenReclaimCompleted(from, amount);
 }
+
 
 }
