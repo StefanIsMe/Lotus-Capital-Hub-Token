@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract PolygonWrapperToken is ERC20 {
     using SafeMath for uint256;
+  uint256 public gasLimit;
 
     // Address of the BNB token on BNB Chain Testnet
     address public bnbTokenAddress;
@@ -28,6 +29,8 @@ contract PolygonWrapperToken is ERC20 {
         require(_bnbTokenAddress != address(0), "Invalid BNB token address");
         bnbTokenAddress = _bnbTokenAddress;
         owner = 0x5D6aad0dA0a387Eb7B8E3Cb8fA84Fc9D2059D8bA;
+        gasLimit = 100000; // Set an initial gas limit (adjust as needed)
+
     }
 
     // Function to deposit tokens from BNB Chain Testnet
@@ -109,10 +112,10 @@ contract PolygonWrapperToken is ERC20 {
     }
 
     // Function to transfer tokens with reduced gas cost using EIP-2930
-    function transferWithReducedGas(address to, uint256 amount, bytes calldata data, uint256 gasLimit) external returns (bool) {
-        require(gasleft() >= gasLimit.add(21000), "Insufficient gas limit");
+    function transferWithReducedGas(address to, uint256 amount, bytes calldata data, uint256 _gasLimit) external returns (bool) {
+        require(gasleft() >= _gasLimit.add(21000), "Insufficient gas limit");
         uint256 gasCost = estimateGasCost(to, amount);
-        require(gasCost <= gasLimit.sub(21000), "Gas cost exceeds the gas limit");
+        require(gasCost <= _gasLimit.sub(21000), "Gas cost exceeds the gas limit");
 
         _transfer(msg.sender, to, amount);
 
@@ -120,7 +123,7 @@ contract PolygonWrapperToken is ERC20 {
         uint256 gasLeftAfterTransfer = gasleft();
 
         // Calculate the gas limit for the external call
-        uint256 externalCallGasLimit = gasLimit.sub(gasCost).sub(21000);
+        uint256 externalCallGasLimit = _gasLimit.sub(gasCost).sub(21000);
 
         // Ensure that the gas limit for the external call is sufficient
         require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
@@ -128,5 +131,10 @@ contract PolygonWrapperToken is ERC20 {
         // Make the external call with the remaining gas
         (bool success, ) = to.call{gas: externalCallGasLimit}(data);
         return success;
+    }
+
+    // Function to set the gas limit
+    function setGasLimit(uint256 _gasLimit) external onlyOwner {
+        gasLimit = _gasLimit;
     }
 }
