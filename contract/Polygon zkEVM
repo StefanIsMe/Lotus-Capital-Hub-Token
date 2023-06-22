@@ -31,7 +31,8 @@ contract PolygonWrapperToken is ERC20 {
         require(amount > 0, "Amount must be greater than 0");
 
         // Transfer tokens from the user to this contract
-        require(IBNBToken(bnbTokenAddress).transferFrom(msg.sender, address(this), amount), "Token transfer failed");
+        IERC20 bnbToken = IERC20(bnbTokenAddress);
+        require(bnbToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed");
 
         // Mint wrapped tokens
         _mint(msg.sender, amount);
@@ -54,7 +55,8 @@ contract PolygonWrapperToken is ERC20 {
         depositedTokens[msg.sender] -= amount;
 
         // Transfer tokens from this contract to the user on BNB Chain Testnet
-        require(IBNBToken(bnbTokenAddress).transfer(msg.sender, amount), "Token transfer failed");
+        IERC20 bnbToken = IERC20(bnbTokenAddress);
+        require(bnbToken.transfer(msg.sender, amount), "Token transfer failed");
 
         emit Withdrawal(msg.sender, amount);
     }
