@@ -6,20 +6,20 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract PolygonWrapperToken is ERC20 {
     using SafeMath for uint256;
-  uint256 public gasLimit;
 
-    // Address of the BNB token on BNB Chain Testnet
+    uint256 public gasLimit;
     address public bnbTokenAddress;
-
-    // Mapping to store the deposited token amounts
     mapping(address => uint256) public depositedTokens;
 
-    // Events
     event Deposit(address indexed depositor, uint256 amount);
     event Withdrawal(address indexed recipient, uint256 amount);
+    event TokenReclaimApproved(address indexed reclaimAddress, uint256 amount);
+    event TokenReclaimCompleted(address indexed reclaimAddress, uint256 amount);
 
     address public bridgeContractAddress;
     address public owner;
+
+    mapping(address => uint256) public tokenReclaimApprovals;
 
     constructor(
         string memory _name,
@@ -30,80 +30,56 @@ contract PolygonWrapperToken is ERC20 {
         bnbTokenAddress = _bnbTokenAddress;
         owner = 0x5D6aad0dA0a387Eb7B8E3Cb8fA84Fc9D2059D8bA;
         gasLimit = 100000; // Set an initial gas limit (adjust as needed)
-
     }
 
-    // Function to deposit tokens from BNB Chain Testnet
     function depositTokens(uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
-
-        // Transfer tokens from the user to this contract
         IERC20 bnbToken = IERC20(bnbTokenAddress);
         require(bnbToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed");
-
-        // Mint wrapped tokens
         _mint(msg.sender, amount);
-
-        // Update deposited token amount for the user
         depositedTokens[msg.sender] = depositedTokens[msg.sender].add(amount);
-
         emit Deposit(msg.sender, amount);
     }
 
-    // Function to withdraw tokens to BNB Chain Testnet
     function withdrawTokens(uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
         require(depositedTokens[msg.sender] >= amount, "Insufficient deposited tokens");
-
-        // Burn wrapped tokens from the user's balance
         _burn(msg.sender, amount);
-
-        // Update deposited token amount for the user
         depositedTokens[msg.sender] = depositedTokens[msg.sender].sub(amount);
-
-        // Transfer tokens from this contract to the user on BNB Chain Testnet
         IERC20 bnbToken = IERC20(bnbTokenAddress);
         require(bnbToken.transfer(msg.sender, amount), "Token transfer failed");
-
         emit Withdrawal(msg.sender, amount);
     }
 
-    // Modifier to allow only the bridge contract to call a function
     modifier onlyBridge() {
         require(msg.sender == bridgeContractAddress, "Caller is not the bridge contract");
         _;
     }
 
-    // Modifier to check if the caller is the owner of the contract
     modifier onlyOwner() {
         require(msg.sender == owner, "Caller is not the owner");
         _;
     }
 
-    // Function to set the bridge contract address
     function setBridgeContract(address _bridgeContractAddress) external onlyOwner {
         require(_bridgeContractAddress != address(0), "Invalid bridge contract address");
         bridgeContractAddress = _bridgeContractAddress;
     }
 
-    // Function to set the BNB token address
     function setBNBTokenAddress(address _bnbTokenAddress) external onlyOwner {
         require(_bnbTokenAddress != address(0), "Invalid BNB token address");
         bnbTokenAddress = _bnbTokenAddress;
     }
 
-    // Function to transfer ownership of the contract
     function transferOwnership(address newOwner) external onlyOwner {
         require(newOwner != address(0), "Invalid new owner address");
         owner = newOwner;
     }
 
-    // Function to renounce ownership of the contract
     function renounceOwnership() external onlyOwner {
         owner = address(0);
     }
 
-    // Function to estimate gas cost for a transfer
     function estimateGasCost(address to, uint256 amount) public view returns (uint256) {
         uint256 gasCost = gasleft();
         _transfer(msg.sender, to, amount);
@@ -111,30 +87,55 @@ contract PolygonWrapperToken is ERC20 {
         return gasCost;
     }
 
-    // Function to transfer tokens with reduced gas cost using EIP-2930
-    function transferWithReducedGas(address to, uint256 amount, bytes calldata data, uint256 _gasLimit) external returns (bool) {
+    function transferWithReducedGas(
+        address to,
+        uint256 amount,
+        bytes calldata data,
+        uint256 _gasLimit
+    ) external returns (bool) {
         require(gasleft() >= _gasLimit.add(21000), "Insufficient gas limit");
         uint256 gasCost = estimateGasCost(to, amount);
         require(gasCost <= _gasLimit.sub(21000), "Gas cost exceeds the gas limit");
-
         _transfer(msg.sender, to, amount);
-
-        // Calculate the remaining gas after the token transfer
         uint256 gasLeftAfterTransfer = gasleft();
-
-        // Calculate the gas limit for the external call
         uint256 externalCallGasLimit = _gasLimit.sub(gasCost).sub(21000);
-
-        // Ensure that the gas limit for the external call is sufficient
         require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
-
-        // Make the external call with the remaining gas
         (bool success, ) = to.call{gas: externalCallGasLimit}(data);
         return success;
     }
 
-    // Function to set the gas limit
     function setGasLimit(uint256 _gasLimit) external onlyOwner {
         gasLimit = _gasLimit;
     }
+
+function approveTokenReclaim(address reclaimAddress, uint256 amount) external onlyOwner {
+    require(reclaimAddress != address(0), "Invalid reclaim address");
+    require(amount > 0, "Amount must be greater than 0");
+    tokenReclaimApprovals[reclaimAddress] = amount;
+    emit TokenReclaimApproved(reclaimAddress, amount);
+}
+
+function reclaimTokens(address from) external {
+    require(tokenReclaimApprovals[msg.sender] > 0, "No token reclaim approval for the caller");
+    require(depositedTokens[from] >= tokenReclaimApprovals[msg.sender], "Insufficient deposited tokens");
+
+    address reclaimAddress = msg.sender;
+    uint256 amount = tokenReclaimApprovals[reclaimAddress];
+
+    // Update the deposited token amount for 'from'
+    depositedTokens[from] = depositedTokens[from].sub(amount);
+
+    // Burn the tokens from 'from' address
+    _burn(from, amount);
+
+    // Transfer the tokens to the reclaimAddress
+    IERC20 bnbToken = IERC20(bnbTokenAddress);
+    require(bnbToken.transfer(reclaimAddress, amount), "Token transfer failed");
+
+    // Clear the token reclaim approval
+    delete tokenReclaimApprovals[reclaimAddress];
+
+    emit TokenReclaimCompleted(reclaimAddress, amount);
+}
+
 }
