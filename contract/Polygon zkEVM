@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./SafeMath.sol";
 
 contract PolygonWrapperToken is ERC20 {
+    using SafeMath for uint256;
 
     // Address of the BNB token on BNB Chain Testnet
     address public bnbTokenAddress;
@@ -37,7 +38,7 @@ contract PolygonWrapperToken is ERC20 {
         _mint(msg.sender, amount);
 
         // Update deposited token amount for the user
-        depositedTokens[msg.sender] += amount;
+        depositedTokens[msg.sender] = depositedTokens[msg.sender].add(amount);
 
         emit Deposit(msg.sender, amount);
     }
@@ -51,7 +52,7 @@ contract PolygonWrapperToken is ERC20 {
         _burn(msg.sender, amount);
 
         // Update deposited token amount for the user
-        depositedTokens[msg.sender] -= amount;
+        depositedTokens[msg.sender] = depositedTokens[msg.sender].sub(amount);
 
         // Transfer tokens from this contract to the user on BNB Chain Testnet
         IERC20 bnbToken = IERC20(bnbTokenAddress);
