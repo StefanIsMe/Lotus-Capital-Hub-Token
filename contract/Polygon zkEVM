@@ -2,19 +2,10 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./IERC20.sol";
+import "./SafeMath.sol";
 
 contract PolygonWrapperToken is ERC20 {
-
-function transfer(address recipient, uint256 amount) external returns (bool) {
-    require(recipient != address(0), "Invalid recipient address");
-    require(amount > 0, "Amount must be greater than 0");
-    require(amount <= balanceOf(msg.sender), "Insufficient balance");
-
-    _transfer(msg.sender, recipient, amount);
-
-    return true;
-}
-
 
     // Address of the BNB token on BNB Chain Testnet
     address public bnbTokenAddress = 0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd;
