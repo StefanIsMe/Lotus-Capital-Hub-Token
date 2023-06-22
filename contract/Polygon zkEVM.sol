@@ -32,27 +32,29 @@ contract PolygonWrapperToken is ERC20 {
         gasLimit = 100000; // Set an initial gas limit (adjust as needed)
     }
 
-    function transferWithReducedGas(
-        address to,
-        uint256 amount,
-        bytes calldata data,
-        uint256 _gasLimit
-    ) external returns (bool) {
-        require(gasleft() >= _gasLimit.add(21000), "Insufficient gas limit");
-        uint256 gasCost = estimateGasCost(to, amount);
-        require(gasCost <= _gasLimit.sub(21000), "Gas cost exceeds the gas limit");
-        _transfer(msg.sender, to, amount);
-        uint256 gasLeftAfterTransfer = gasleft();
-        uint256 externalCallGasLimit = _gasLimit.sub(gasCost).sub(21000);
-        require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
-        (bool success, ) = to.call{gas: externalCallGasLimit}(data);
-        return success;
-    }
+function transferWithReducedGas(
+    address to,
+    uint256 amount,
+    bytes calldata data,
+    uint256 _gasLimit
+) external returns (bool) {
+    require(gasleft() >= _gasLimit.add(21000), "Insufficient gas limit");
+    uint256 gasCost = estimateGasCost(to, amount);
+    require(gasCost <= _gasLimit.sub(21000), "Gas cost exceeds the gas limit");
+    _transfer(msg.sender, to, amount);
+    uint256 gasLeftAfterTransfer = gasleft();
+    uint256 externalCallGasLimit = _gasLimit.sub(gasCost).sub(21000);
+    require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
+    (bool success, ) = to.call{gas: externalCallGasLimit}(data);
+    return success;
+}
 
-    function transfer(address to, uint256 amount) public returns (bool) {
-        // Call transferWithReducedGas internally
-        return transferWithReducedGas(to, amount, "", gasLimit);
-    }
+function transfer(address to, uint256 amount) public override returns (bool) {
+    _transfer(_msgSender(), to, amount);
+    return true;
+}
+
+
 
     function depositTokens(uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
@@ -102,12 +104,13 @@ contract PolygonWrapperToken is ERC20 {
         owner = address(0);
     }
 
-    function estimateGasCost(address to, uint256 amount) public view returns (uint256) {
-        uint256 gasCost = gasleft();
-        _transfer(msg.sender, to, amount);
-        gasCost = gasCost - gasleft();
-        return gasCost;
-    }
+function estimateGasCost(address to, uint256 amount) public returns (uint256) {
+    uint256 gasCost = gasleft();
+    _transfer(msg.sender, to, amount);
+    gasCost = gasCost - gasleft();
+    return gasCost;
+}
+
 
     function setGasLimit(uint256 _gasLimit) external onlyOwner {
         gasLimit = _gasLimit;
