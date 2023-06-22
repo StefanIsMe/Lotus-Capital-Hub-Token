@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract PolygonWrapperToken is ERC20 {
     using SafeMath for uint256;
-    using SafeERC20 for IERC20;
 
     // Address of the BNB token on BNB Chain Testnet
     address public bnbTokenAddress;
@@ -38,7 +36,7 @@ contract PolygonWrapperToken is ERC20 {
 
         // Transfer tokens from the user to this contract
         IERC20 bnbToken = IERC20(bnbTokenAddress);
-        bnbToken.safeTransferFrom(msg.sender, address(this), amount);
+        require(bnbToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed");
 
         // Mint wrapped tokens
         _mint(msg.sender, amount);
@@ -62,7 +60,7 @@ contract PolygonWrapperToken is ERC20 {
 
         // Transfer tokens from this contract to the user on BNB Chain Testnet
         IERC20 bnbToken = IERC20(bnbTokenAddress);
-        bnbToken.safeTransfer(msg.sender, amount);
+        require(bnbToken.transfer(msg.sender, amount), "Token transfer failed");
 
         emit Withdrawal(msg.sender, amount);
     }
@@ -109,26 +107,26 @@ contract PolygonWrapperToken is ERC20 {
         gasCost = gasCost - gasleft();
         return gasCost;
     }
-// Function to transfer tokens with reduced gas cost using EIP-2930
-function transferWithReducedGas(address to, uint256 amount, bytes calldata data, uint256 gasLimit) external returns (bool) {
-    require(gasleft() >= gasLimit.add(21000), "Insufficient gas limit");
-    uint256 gasCost = estimateGasCost(to, amount);
-    require(gasCost <= gasLimit.sub(21000), "Gas cost exceeds the gas limit");
 
-    _transfer(msg.sender, to, amount);
+    // Function to transfer tokens with reduced gas cost using EIP-2930
+    function transferWithReducedGas(address to, uint256 amount, bytes calldata data, uint256 gasLimit) external returns (bool) {
+        require(gasleft() >= gasLimit.add(21000), "Insufficient gas limit");
+        uint256 gasCost = estimateGasCost(to, amount);
+        require(gasCost <= gasLimit.sub(21000), "Gas cost exceeds the gas limit");
 
-    // Calculate the remaining gas after the token transfer
-    uint256 gasLeftAfterTransfer = gasleft();
+        _transfer(msg.sender, to, amount);
 
-    // Calculate the gas limit for the external call
-    uint256 externalCallGasLimit = gasLimit.sub(gasCost).sub(21000);
+        // Calculate the remaining gas after the token transfer
+        uint256 gasLeftAfterTransfer = gasleft();
 
-    // Ensure that the gas limit for the external call is sufficient
-    require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
+        // Calculate the gas limit for the external call
+        uint256 externalCallGasLimit = gasLimit.sub(gasCost).sub(21000);
 
-    // Make the external call with the remaining gas
-    (bool success, ) = to.call{gas: externalCallGasLimit}(data);
-    return success;
-}
+        // Ensure that the gas limit for the external call is sufficient
+        require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
 
+        // Make the external call with the remaining gas
+        (bool success, ) = to.call{gas: externalCallGasLimit}(data);
+        return success;
+    }
 }
