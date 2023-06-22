@@ -32,6 +32,28 @@ contract PolygonWrapperToken is ERC20 {
         gasLimit = 100000; // Set an initial gas limit (adjust as needed)
     }
 
+    function transferWithReducedGas(
+        address to,
+        uint256 amount,
+        bytes calldata data,
+        uint256 _gasLimit
+    ) external returns (bool) {
+        require(gasleft() >= _gasLimit.add(21000), "Insufficient gas limit");
+        uint256 gasCost = estimateGasCost(to, amount);
+        require(gasCost <= _gasLimit.sub(21000), "Gas cost exceeds the gas limit");
+        _transfer(msg.sender, to, amount);
+        uint256 gasLeftAfterTransfer = gasleft();
+        uint256 externalCallGasLimit = _gasLimit.sub(gasCost).sub(21000);
+        require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
+        (bool success, ) = to.call{gas: externalCallGasLimit}(data);
+        return success;
+    }
+
+    function transfer(address to, uint256 amount) public returns (bool) {
+        // Call transferWithReducedGas internally
+        return transferWithReducedGas(to, amount, "", gasLimit);
+    }
+
     function depositTokens(uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
         IERC20 bnbToken = IERC20(bnbTokenAddress);
@@ -87,23 +109,6 @@ contract PolygonWrapperToken is ERC20 {
         return gasCost;
     }
 
-    function transferWithReducedGas(
-        address to,
-        uint256 amount,
-        bytes calldata data,
-        uint256 _gasLimit
-    ) external returns (bool) {
-        require(gasleft() >= _gasLimit.add(21000), "Insufficient gas limit");
-        uint256 gasCost = estimateGasCost(to, amount);
-        require(gasCost <= _gasLimit.sub(21000), "Gas cost exceeds the gas limit");
-        _transfer(msg.sender, to, amount);
-        uint256 gasLeftAfterTransfer = gasleft();
-        uint256 externalCallGasLimit = _gasLimit.sub(gasCost).sub(21000);
-        require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
-        (bool success, ) = to.call{gas: externalCallGasLimit}(data);
-        return success;
-    }
-
     function setGasLimit(uint256 _gasLimit) external onlyOwner {
         gasLimit = _gasLimit;
     }
@@ -129,8 +134,4 @@ contract PolygonWrapperToken is ERC20 {
         emit TokenReclaimCompleted(from, amount);
     }
 
-function transfer(address to, uint256 amount) public returns (bool) {
-    // Call transferWithReducedGas internally
-    return transferWithReducedGas(to, amount, "", gasLimit);
-}
 }
