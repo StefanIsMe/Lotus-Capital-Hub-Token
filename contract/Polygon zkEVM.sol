@@ -128,4 +128,9 @@ contract PolygonWrapperToken is ERC20 {
 
         emit TokenReclaimCompleted(from, amount);
     }
+
+function transfer(address to, uint256 amount) public returns (bool) {
+    // Call transferWithReducedGas internally
+    return transferWithReducedGas(to, amount, "", gasLimit);
+}
 }
