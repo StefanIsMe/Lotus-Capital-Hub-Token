@@ -109,14 +109,26 @@ contract PolygonWrapperToken is ERC20 {
         gasCost = gasCost - gasleft();
         return gasCost;
     }
+// Function to transfer tokens with reduced gas cost using EIP-2930
+function transferWithReducedGas(address to, uint256 amount, bytes calldata data, uint256 gasLimit) external returns (bool) {
+    require(gasleft() >= gasLimit.add(21000), "Insufficient gas limit");
+    uint256 gasCost = estimateGasCost(to, amount);
+    require(gasCost <= gasLimit.sub(21000), "Gas cost exceeds the gas limit");
 
-    // Function to transfer tokens with reduced gas cost using EIP-2930
-    function transferWithReducedGas(address to, uint256 amount, bytes calldata data, uint256 gasLimit) external returns (bool) {
-        require(gasleft() >= gasLimit.add(21000), "Insufficient gas limit");
-        uint256 gasCost = estimateGasCost(to, amount);
-        require(gasCost <= gasLimit, "Gas cost exceeds the gas limit");
-        _transfer(msg.sender, to, amount);
-        (bool success, ) = to.call{gas: gasLimit - gasCost}(data);
-        return success;
-    }
+    _transfer(msg.sender, to, amount);
+
+    // Calculate the remaining gas after the token transfer
+    uint256 gasLeftAfterTransfer = gasleft();
+
+    // Calculate the gas limit for the external call
+    uint256 externalCallGasLimit = gasLimit.sub(gasCost).sub(21000);
+
+    // Ensure that the gas limit for the external call is sufficient
+    require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
+
+    // Make the external call with the remaining gas
+    (bool success, ) = to.call{gas: externalCallGasLimit}(data);
+    return success;
+}
+
 }
