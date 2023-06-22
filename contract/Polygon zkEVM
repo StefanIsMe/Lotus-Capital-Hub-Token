@@ -17,6 +17,9 @@ contract PolygonWrapperToken is ERC20 {
     event Deposit(address indexed depositor, uint256 amount);
     event Withdrawal(address indexed recipient, uint256 amount);
 
+    address public bridgeContractAddress;
+    address public owner;
+
     constructor(
         string memory _name,
         string memory _symbol,
@@ -24,6 +27,7 @@ contract PolygonWrapperToken is ERC20 {
     ) ERC20(_name, _symbol) {
         require(_bnbTokenAddress != address(0), "Invalid BNB token address");
         bnbTokenAddress = _bnbTokenAddress;
+        owner = msg.sender;
     }
 
     // Function to deposit tokens from BNB Chain Testnet
@@ -65,5 +69,34 @@ contract PolygonWrapperToken is ERC20 {
     modifier onlyBridge() {
         require(msg.sender == bridgeContractAddress, "Caller is not the bridge contract");
         _;
+    }
+    
+    // Modifier to check if the caller is the owner of the contract
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
+    
+    // Function to set the bridge contract address
+    function setBridgeContract(address _bridgeContractAddress) external onlyOwner {
+        require(_bridgeContractAddress != address(0), "Invalid bridge contract address");
+        bridgeContractAddress = _bridgeContractAddress;
+    }
+    
+    // Function to set the BNB token address
+    function setBNBTokenAddress(address _bnbTokenAddress) external onlyOwner {
+        require(_bnbTokenAddress != address(0), "Invalid BNB token address");
+        bnbTokenAddress = _bnbTokenAddress;
+    }
+    
+    // Function to transfer ownership of the contract
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Invalid new owner address");
+        owner = newOwner;
+    }
+    
+    // Function to renounce ownership of the contract
+    function renounceOwnership() external onlyOwner {
+        owner = address(0);
     }
 }
