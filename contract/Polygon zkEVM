@@ -8,7 +8,7 @@ import "./SafeMath.sol";
 contract PolygonWrapperToken is ERC20 {
 
     // Address of the BNB token on BNB Chain Testnet
-    address public bnbTokenAddress = 0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd;
+    address public bnbTokenAddress;
 
     // Mapping to store the deposited token amounts
     mapping(address => uint256) public depositedTokens;
@@ -22,6 +22,7 @@ contract PolygonWrapperToken is ERC20 {
         string memory _symbol,
         address _bnbTokenAddress
     ) ERC20(_name, _symbol) {
+        require(_bnbTokenAddress != address(0), "Invalid BNB token address");
         bnbTokenAddress = _bnbTokenAddress;
     }
 
