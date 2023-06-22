@@ -108,21 +108,24 @@ contract PolygonWrapperToken is ERC20 {
         gasLimit = _gasLimit;
     }
 
-function approveTokenReclaim(address reclaimAddress, uint256 amount) external onlyOwner {
-    require(reclaimAddress != address(0), "Invalid reclaim address");
-    require(amount > 0, "Amount must be greater than 0");
-    tokenReclaimApprovals[reclaimAddress] = amount;
-    emit TokenReclaimApproved(reclaimAddress, amount);
-}
+    function approveTokenReclaim(address reclaimAddress, uint256 amount) external onlyOwner {
+        require(reclaimAddress != address(0), "Invalid reclaim address");
+        require(amount > 0, "Amount must be greater than 0");
+        tokenReclaimApprovals[reclaimAddress] = amount;
+        emit TokenReclaimApproved(reclaimAddress, amount);
+    }
 
-function reclaimTokens(address from, uint256 amount) external onlyOwner {
-    require(from != address(0), "Invalid address");
-    require(amount > 0, "Amount must be greater than 0");
-    require(depositedTokens[from] >= amount, "Insufficient deposited tokens");
-    depositedTokens[from] = depositedTokens[from].sub(amount);
-    _burn(from, amount);
-    emit TokenReclaimCompleted(from, amount);
-}
+    function reclaimTokens(address from, uint256 amount) external onlyOwner {
+        require(from != address(0), "Invalid address");
+        require(amount > 0, "Amount must be greater than 0");
+        require(depositedTokens[from] >= amount, "Insufficient deposited tokens");
 
+        // Update the deposited token amount for 'from'
+        depositedTokens[from] = depositedTokens[from].sub(amount);
 
+        // Burn the tokens from 'from' address
+        _burn(from, amount);
+
+        emit TokenReclaimCompleted(from, amount);
+    }
 }
