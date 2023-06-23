@@ -195,7 +195,15 @@ function setGasLimit(uint256 _gasLimit) external onlyOwner {
     emit GasLimitChanged(_gasLimit);
 }
 
+function setBridgeContract(address _bridgeContractAddress) external onlyOwner {
+    require(_bridgeContractAddress != address(0), "Invalid bridge contract address");
+    bridgeContractAddress = _bridgeContractAddress;
+    emit BridgeContractChanged(_bridgeContractAddress);
+}
 
-
+function setGasLimit(uint256 _gasLimit) external onlyOwner {
+    gasLimit = _gasLimit;
+    emit GasLimitChanged(_gasLimit);
+}
 
 }
