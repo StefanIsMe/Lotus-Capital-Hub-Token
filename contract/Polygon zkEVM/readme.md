@@ -47,9 +47,7 @@ The constructor sets the `bnbTokenAddress` variable with the provided address, i
 The contract provides two functions for depositing and withdrawing tokens:
 
 - `depositTokens`: This function allows users to deposit tokens from the BSC network to the Polygon network. It takes the amount of tokens to be deposited as a parameter. The function transfers the tokens from the user to the contract, updates the deposited token amount for the user, and emits a `Deposit` event.
-- `withdrawTokens`: This function
-
- allows users to withdraw tokens from the Polygon network to the BSC network. It takes the amount of tokens to be withdrawn as a parameter. The function updates the deposited token amount for the user, burns the tokens from the user's balance, and transfers the tokens from the contract to the user on the BSC Testnet. It emits a `Withdrawal` event.
+- `withdrawTokens`: This function allows users to withdraw tokens from the Polygon network to the BSC network. It takes the amount of tokens to be withdrawn as a parameter. The function updates the deposited token amount for the user, burns the tokens from the user's balance, and transfers the tokens from the contract to the user on the BSC Testnet. It emits a `Withdrawal` event.
 
 ## Modifiers
 
