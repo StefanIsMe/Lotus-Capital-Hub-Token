@@ -184,5 +184,18 @@ function _burn(address account, uint256 amount) internal override(ERC20Votes) {
 
   _moveVotingPower(delegates(account), address(0), amount); // Move voting power when tokens are burned
 }
+function setBridgeContract(address _bridgeContractAddress) external onlyOwner {
+    require(_bridgeContractAddress != address(0), "Invalid bridge contract address");
+    bridgeContractAddress = _bridgeContractAddress;
+    emit BridgeContractChanged(_bridgeContractAddress);
+}
+
+function setGasLimit(uint256 _gasLimit) external onlyOwner {
+    gasLimit = _gasLimit;
+    emit GasLimitChanged(_gasLimit);
+}
+
+
+
 
 }
