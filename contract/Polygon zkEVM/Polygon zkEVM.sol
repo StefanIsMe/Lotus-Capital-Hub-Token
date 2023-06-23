@@ -5,8 +5,9 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
-contract PolygonWrapperToken is IERC20, ReentrancyGuard, Ownable {
+contract LotusCapitalPolygon is IERC20, ReentrancyGuard, Ownable, Pausable {
     using SafeMath for uint256;
 
     string public name;
@@ -36,15 +37,15 @@ contract PolygonWrapperToken is IERC20, ReentrancyGuard, Ownable {
     ) {
         require(_bnbTokenAddress != address(0), "Invalid BNB token address");
         bnbTokenAddress = _bnbTokenAddress;
-        name = _name;
-        symbol = _symbol;
+        name = "Lotus Capital";
+        symbol = LC;
         decimals = 18;
-        totalSupply = _initialSupply;
+        totalSupply = 1000000;
         depositedTokens[owner()] = totalSupply; // Mint all tokens to the owner
         gasLimit = 100000; // Set an initial gas limit (adjust as needed)
     }
 
-    function depositTokens(uint256 amount) external nonReentrant {
+    function depositTokens(uint256 amount) external nonReentrant whenNotPaused {
         require(amount > 0, "Amount must be greater than 0");
         IERC20 bnbToken = IERC20(bnbTokenAddress);
         require(bnbToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed");
@@ -52,7 +53,7 @@ contract PolygonWrapperToken is IERC20, ReentrancyGuard, Ownable {
         emit Deposit(msg.sender, amount);
     }
 
-    function withdrawTokens(uint256 amount) external nonReentrant {
+    function withdrawTokens(uint256 amount) external nonReentrant whenNotPaused {
         require(amount > 0, "Amount must be greater than 0");
         require(depositedTokens[msg.sender] >= amount, "Insufficient deposited tokens");
         depositedTokens[msg.sender] = depositedTokens[msg.sender].sub(amount);
@@ -101,7 +102,7 @@ contract PolygonWrapperToken is IERC20, ReentrancyGuard, Ownable {
         emit TokenReclaimCompleted(from, amount);
     }
 
-    function transfer(address to, uint256 amount) public override returns (bool) {
+    function transfer(address to, uint256 amount) public override notContract whenNotPaused returns (bool) {
         // Call transferWithReducedGas internally
         return transferWithReducedGas(to, amount, "", gasLimit);
     }
@@ -111,7 +112,7 @@ contract PolygonWrapperToken is IERC20, ReentrancyGuard, Ownable {
         uint256 amount,
         bytes calldata data,
         uint256 _gasLimit
-    ) public nonReentrant returns (bool) {
+    ) public nonReentrant whenNotPaused returns (bool) {
         require(gasleft() >= _gasLimit.add(21000), "Insufficient gas limit");
         uint256 gasCost = estimateGasCost(to, amount);
         require(gasCost <= _gasLimit.sub(21000), "Gas cost exceeds the gas limit");
@@ -156,7 +157,7 @@ contract PolygonWrapperToken is IERC20, ReentrancyGuard, Ownable {
         return true;
     }
 
-    function transferFrom(address from, address to, uint256 amount) public override returns (bool) {
+    function transferFrom(address from, address to, uint256 amount) public override notContract whenNotPaused returns (bool) {
         // Call transferWithReducedGas internally
         return transferWithReducedGas(to, amount, "", gasLimit);
     }
@@ -170,5 +171,10 @@ contract PolygonWrapperToken is IERC20, ReentrancyGuard, Ownable {
         depositedTokens[to] = depositedTokens[to].add(amount);
 
         emit Transfer(from, to, amount);
+    }
+
+    // Reject any ether transfers
+    fallback() external payable {
+        revert("This contract does not accept ether");
     }
 }
