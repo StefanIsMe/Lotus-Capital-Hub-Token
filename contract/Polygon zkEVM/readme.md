@@ -2,6 +2,15 @@
 
 PolygonWrapperToken is a smart contract that implements an ERC20 token that can be bridged between BNB Chain and Polygon zkEVM using a custom bridge contract. It also includes features to reduce gas costs and allow token reclaims by the owner.
 
+## Imports
+
+The contract imports the following libraries and contracts:
+
+- `ERC20` from `@openzeppelin/contracts/token/ERC20/ERC20.sol`: Provides a basic implementation of the ERC20 token standard.
+- `ReentrancyGuard` from `@openzeppelin/contracts/security/ReentrancyGuard.sol`: Protects against reentrancy attacks.
+- `Ownable` from `@openzeppelin/contracts/access/Ownable.sol`: Provides basic access control functionality, allowing contract ownership.
+- `Pausable` from `@openzeppelin/contracts/security/Pausable.sol`: Provides functionality to pause and unpause contract operations.
+
 ## Usage
 
 The contract provides the following functions and features:
