@@ -8,6 +8,10 @@ event Deposit(address indexed depositor, uint256 amount);
 event Withdrawal(address indexed recipient, uint256 amount);
 event TokenReclaimApproved(address indexed reclaimAddress, uint256 amount);
 event TokenReclaimCompleted(address indexed reclaimAddress, uint256 amount);
+event BridgeContractChanged(address indexed newBridgeContractAddress); // Added an event for changing the bridge contract address
+event GasLimitChanged(uint256 indexed newGasLimit); // Added an event for changing the gas limit
+event Paused(address account); // Added an event for pausing the contract
+event Unpaused(address account); // Added an event for unpausing the contract
 
 address public bridgeContractAddress;
 
@@ -49,10 +53,12 @@ modifier onlyBridge() {
 function setBridgeContract(address _bridgeContractAddress) external onlyOwner {
     require(_bridgeContractAddress != address(0), "Invalid bridge contract address");
     bridgeContractAddress = _bridgeContractAddress;
+    emit BridgeContractChanged(_bridgeContractAddress); // Added an emit function for changing the bridge contract address
 }
 
 function setGasLimit(uint256 _gasLimit) external onlyOwner {
     gasLimit = _gasLimit;
+    emit GasLimitChanged(_gasLimit); // Added an emit function for changing the gas limit
 }
 
 function approveTokenReclaim(address reclaimAddress, uint256 amount) external onlyOwner {
@@ -146,5 +152,17 @@ function receiveFromBridge(address from, uint256 amount) external onlyBridge whe
     // Transfer the tokens from the bridge contract to the recipient
     _transfer(bridgeContractAddress, from, amount);
 }
-Copy
+
+// Add functions to pause and unpause the contract by the owner
+
+function pause() external onlyOwner {
+  _pause();
+  emit Paused(msg.sender); // Added an emit function for pausing the contract
+}
+
+function unpause() external onlyOwner {
+  _unpause();
+  emit Unpaused(msg.sender); // Added an emit function for unpausing the contract
+}
+
 }
