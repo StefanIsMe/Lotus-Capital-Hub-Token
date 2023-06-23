@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT pragma solidity ^0.8.0;
 
-import “@openzeppelin/contracts/token/ERC20/ERC20.sol”; import “@openzeppelin/contracts/security/ReentrancyGuard.sol”; import “@openzeppelin/contracts/access/Ownable.sol”; import “@openzeppelin/contracts/security/Pausable.sol”;
+import “@openzeppelin/contracts/token/ERC20/ERC20.sol”; import “@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol”; // Imported ERC20Votes for voting and snapshots import “@openzeppelin/contracts/security/ReentrancyGuard.sol”; import “@openzeppelin/contracts/access/Ownable.sol”; import “@openzeppelin/contracts/security/Pausable.sol”;
 
-contract PolygonWrapperToken is ERC20, ReentrancyGuard, Ownable, Pausable { uint256 public gasLimit; address public immutable bnbTokenAddress;
+contract PolygonWrapperToken is ERC20, ERC20Votes, ReentrancyGuard, Ownable, Pausable { // Inherited from ERC20Votes uint256 public gasLimit; address public immutable bnbTokenAddress;
 
 event Deposit(address indexed depositor, uint256 amount);
 event Withdrawal(address indexed recipient, uint256 amount);
@@ -163,6 +163,26 @@ function pause() external onlyOwner {
 function unpause() external onlyOwner {
   _unpause();
   emit Unpaused(msg.sender); // Added an emit function for unpausing the contract
+}
+
+// Override functions from ERC20Votes for voting and snapshots
+
+function _afterTokenTransfer(address from, address to, uint256 amount) internal override(ERC20Votes) {
+  super._afterTokenTransfer(from, to, amount); // Call parent hook
+
+  _moveVotingPower(delegates(from), delegates(to), amount); // Move voting power when tokens are transferred
+}
+
+function _mint(address account, uint256 amount) internal override(ERC20Votes) {
+  super._mint(account, amount); // Call parent hook
+
+  _moveVotingPower(address(0), delegates(account), amount); // Move voting power when tokens are minted
+}
+
+function _burn(address account, uint256 amount) internal override(ERC20Votes) {
+  super._burn(account, amount); // Call parent hook
+
+  _moveVotingPower(delegates(account), address(0), amount); // Move voting power when tokens are burned
 }
 
 }
