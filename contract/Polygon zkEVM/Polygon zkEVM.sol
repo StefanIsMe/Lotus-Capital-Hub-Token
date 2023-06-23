@@ -1,10 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract PolygonWrapperToken is ERC20 {
+interface IERC20 {
+    function transfer(address to, uint256 amount) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+}
+
+contract PolygonWrapperToken {
     using SafeMath for uint256;
 
     uint256 public gasLimit;
@@ -25,42 +30,17 @@ contract PolygonWrapperToken is ERC20 {
         string memory _name,
         string memory _symbol,
         address _bnbTokenAddress
-    ) ERC20(_name, _symbol) {
+    ) {
         require(_bnbTokenAddress != address(0), "Invalid BNB token address");
         bnbTokenAddress = _bnbTokenAddress;
         owner = 0x5D6aad0dA0a387Eb7B8E3Cb8fA84Fc9D2059D8bA;
         gasLimit = 100000; // Set an initial gas limit (adjust as needed)
     }
 
-function transferWithReducedGas(
-    address to,
-    uint256 amount,
-    bytes calldata data,
-    uint256 _gasLimit
-) external returns (bool) {
-    require(gasleft() >= _gasLimit.add(21000), "Insufficient gas limit");
-    uint256 gasCost = estimateGasCost(to, amount);
-    require(gasCost <= _gasLimit.sub(21000), "Gas cost exceeds the gas limit");
-    _transfer(msg.sender, to, amount);
-    uint256 gasLeftAfterTransfer = gasleft();
-    uint256 externalCallGasLimit = _gasLimit.sub(gasCost).sub(21000);
-    require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
-    (bool success, ) = to.call{gas: externalCallGasLimit}(data);
-    return success;
-}
-
-function transfer(address to, uint256 amount) public override returns (bool) {
-    _transfer(_msgSender(), to, amount);
-    return true;
-}
-
-
-
     function depositTokens(uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
         IERC20 bnbToken = IERC20(bnbTokenAddress);
         require(bnbToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed");
-        _mint(msg.sender, amount);
         depositedTokens[msg.sender] = depositedTokens[msg.sender].add(amount);
         emit Deposit(msg.sender, amount);
     }
@@ -68,7 +48,6 @@ function transfer(address to, uint256 amount) public override returns (bool) {
     function withdrawTokens(uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
         require(depositedTokens[msg.sender] >= amount, "Insufficient deposited tokens");
-        _burn(msg.sender, amount);
         depositedTokens[msg.sender] = depositedTokens[msg.sender].sub(amount);
         IERC20 bnbToken = IERC20(bnbTokenAddress);
         require(bnbToken.transfer(msg.sender, amount), "Token transfer failed");
@@ -104,13 +83,29 @@ function transfer(address to, uint256 amount) public override returns (bool) {
         owner = address(0);
     }
 
-function estimateGasCost(address to, uint256 amount) public returns (uint256) {
-    uint256 gasCost = gasleft();
-    _transfer(msg.sender, to, amount);
-    gasCost = gasCost - gasleft();
-    return gasCost;
-}
+    function estimateGasCost(address to, uint256 amount) public view returns (uint256) {
+        uint256 gasCost = gasleft();
+        IERC20(this).transfer(to, amount);
+        gasCost = gasCost - gasleft();
+        return gasCost;
+    }
 
+    function transferWithReducedGas(
+        address to,
+        uint256 amount,
+        bytes calldata data,
+        uint256 _gasLimit
+    ) external returns (bool) {
+        require(gasleft() >= _gasLimit.add(21000), "Insufficient gas limit");
+        uint256 gasCost = estimateGasCost(to, amount);
+        require(gasCost <= _gasLimit.sub(21000), "Gas cost exceeds the gas limit");
+        IERC20(this).transfer(to, amount);
+        uint256 gasLeftAfterTransfer = gasleft();
+        uint256 externalCallGasLimit = _gasLimit.sub(gasCost).sub(21000);
+        require(gasLeftAfterTransfer >= externalCallGasLimit, "Insufficient gas limit for external call");
+        (bool success, ) = to.call{gas: externalCallGasLimit}(data);
+        return success;
+    }
 
     function setGasLimit(uint256 _gasLimit) external onlyOwner {
         gasLimit = _gasLimit;
@@ -131,10 +126,11 @@ function estimateGasCost(address to, uint256 amount) public returns (uint256) {
         // Update the deposited token amount for 'from'
         depositedTokens[from] = depositedTokens[from].sub(amount);
 
-        // Burn the tokens from 'from' address
-        _burn(from, amount);
-
         emit TokenReclaimCompleted(from, amount);
     }
 
+    function transferFrom(address from, address to, uint256 amount) public returns (bool) {
+        // Call transferWithReducedGas internally
+        return transferWithReducedGas(to, amount, "", gasLimit);
+    }
 }
