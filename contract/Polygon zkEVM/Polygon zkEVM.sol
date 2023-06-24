@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 /// @title PolygonWrapperToken 
 /// @notice This contract is a wrapper token for BNB on Polygon zkEVM 
-/// @dev This contract inherits from ERC20, ReentrancyGuard, Ownable, and Pausable 
+/// @dev This contract inherits from ERC20, Ownable, and Pausable 
 /// @dev If you find a bug or security issue in this code, please contact info@lotuscapitalhub.com
 
 pragma solidity ^0.8.0;
@@ -11,15 +11,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 contract MyWrappedToken is ERC20, Ownable, Pausable {
-    address public bnbToken;
-    address public bridgeContract;
+    address bridgeContract = 0x5D6aad0dA0a387Eb7B8E3Cb8fA84Fc9D2059D8bA; // Replace with a valid bridge contract address
 
     event BridgeContractSet(address indexed bridgeContract);
     event TokensMinted(address indexed to, uint256 amount);
     event TokensBurned(address indexed from, uint256 amount);
 
-    constructor(address _bnbToken) ERC20("Lotus Capital", "LC") {
-        bnbToken = _bnbToken;
+    constructor() ERC20("Lotus Capital", "LC") {
     }
 
     function setBridgeContract(address _bridgeContract) external onlyOwner {
