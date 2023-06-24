@@ -47,8 +47,6 @@ If you find a bug or security issue in this code, please contact info@lotuscapit
 
 ---
 
-This documentation provides an overview of the LotusCapitalTestToken contract and its functions, including the imported dependencies, defined variables, and modifiers. It also includes information about the contract's deployment to the Polygon zkEVM testnet, with the contract address [0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd](https://testnet-zkevm.polygonscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd) accessible on [PolygonScan](https://testnet-zkevm.polygonscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8e
-
-A713f7C9Dd).
+This documentation provides an overview of the LotusCapitalTestToken contract and its functions, including the imported dependencies, defined variables, and modifiers. It also includes information about the contract's deployment to the Polygon zkEVM testnet, with the contract address [0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd](https://testnet-zkevm.polygonscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd) accessible on [PolygonScan](https://testnet-zkevm.polygonscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd).
 
 Refer to the Solidity code for more implementation details and additional comments. If you encounter any bugs or security issues in this code, please contact info@lotuscapitalhub.com.
