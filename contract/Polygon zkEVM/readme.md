@@ -25,6 +25,10 @@ The contract defines the following modifiers:
 - `checkGasLimit()`: Checks if the remaining gas is sufficient.
 - `onlyBridgeContract()`: Restricts access to the bridge contract.
 
+## Deployment to Polygon zkEVM Testnet
+
+This contract has been deployed to the Polygon zkEVM testnet. The deployed contract address is [0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd](https://testnet-zkevm.polygonscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd). You can access the contract details and transactions on [PolygonScan](https://testnet-zkevm.polygonscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd).
+
 ## Usage
 
 The contract provides the following functions and features:
@@ -40,3 +44,11 @@ Additionally, the contract overrides the `_beforeTokenTransfer` function from th
 ## Contact
 
 If you find a bug or security issue in this code, please contact info@lotuscapitalhub.com.
+
+---
+
+This documentation provides an overview of the LotusCapitalTestToken contract and its functions, including the imported dependencies, defined variables, and modifiers. It also includes information about the contract's deployment to the Polygon zkEVM testnet, with the contract address [0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd](https://testnet-zkevm.polygonscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd) accessible on [PolygonScan](https://testnet-zkevm.polygonscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8e
+
+A713f7C9Dd).
+
+Refer to the Solidity code for more implementation details and additional comments. If you encounter any bugs or security issues in this code, please contact info@lotuscapitalhub.com.
