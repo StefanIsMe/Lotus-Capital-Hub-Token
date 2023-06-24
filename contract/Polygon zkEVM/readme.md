@@ -1,6 +1,6 @@
-# MyWrappedToken
+# LotusCapitalTestToken
 
-MyWrappedToken is a smart contract that serves as a wrapper token for BNB on Polygon zkEVM. It inherits from ERC20, Ownable, and Pausable contracts.
+LotusCapitalTestToken is a smart contract that serves as a wrapper token for BNB on Polygon zkEVM. It inherits from ERC20, Ownable, and Pausable contracts.
 
 ## Imports
 
@@ -18,15 +18,22 @@ The contract defines the following variables:
 
 - `bridgeContract`: The address of the bridge contract used for minting and burning tokens.
 
+## Modifiers
+
+The contract defines the following modifiers:
+
+- `checkGasLimit()`: Checks if the remaining gas is sufficient.
+- `onlyBridgeContract()`: Restricts access to the bridge contract.
+
 ## Usage
 
 The contract provides the following functions and features:
 
-- `setBridgeContract(address _bridgeContract) external onlyOwner`: Sets the address of the bridge contract. Make sure to replace the `bridgeContract` address with a valid one.
-- `mint(address to, uint256 amount) external`: Mints tokens to the specified address. Only the bridge contract can call this function.
-- `burn(address from, uint256 amount) external`: Burns tokens from the specified address. Only the bridge contract can call this function.
-- `pause() external onlyOwner`: Pauses contract operations. Only the contract owner can call this function.
-- `unpause() external onlyOwner`: Unpauses contract operations. Only the contract owner can call this function.
+- `setBridgeContract(address _bridgeContract) external onlyOwner`: Sets the address of the bridge contract.
+- `mint(address to, uint256 amount) external onlyBridgeContract checkGasLimit`: Mints tokens to the specified address. Only the bridge contract can call this function, and it checks the gas limit.
+- `burn(address from, uint256 amount) external onlyBridgeContract checkGasLimit`: Burns tokens from the specified address. Only the bridge contract can call this function, and it checks the gas limit.
+- `pause() external onlyOwner checkGasLimit`: Pauses contract operations. Only the contract owner can call this function, and it checks the gas limit.
+- `unpause() external onlyOwner checkGasLimit`: Unpauses contract operations. Only the contract owner can call this function, and it checks the gas limit.
 
 Additionally, the contract overrides the `_beforeTokenTransfer` function from the ERC20 contract to include pausing functionality.
 
