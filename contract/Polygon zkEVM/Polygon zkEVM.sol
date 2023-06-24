@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 contract LotusCapitalTestToken is ERC20, Ownable, Pausable {
-    address bridgeContract; // Updated to remove initial assignment
+    address bridgeContract; 
 
     event BridgeContractSet(address indexed bridgeContract);
     event TokensMinted(address indexed to, uint256 amount);
