@@ -11,11 +11,21 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 contract MyWrappedToken is ERC20, Ownable, Pausable {
-    address bridgeContract = 0x5D6aad0dA0a387Eb7B8E3Cb8fA84Fc9D2059D8bA; // Replace with a valid bridge contract address
+    address bridgeContract; // Updated to remove initial assignment
 
     event BridgeContractSet(address indexed bridgeContract);
     event TokensMinted(address indexed to, uint256 amount);
     event TokensBurned(address indexed from, uint256 amount);
+
+    modifier checkGasLimit() {
+        require(gasleft() >= 30000, "Insufficient gas");
+        _;
+    }
+
+    modifier onlyBridgeContract() {
+        require(msg.sender == bridgeContract, "Caller is not the bridge contract");
+        _;
+    }
 
     constructor() ERC20("Lotus Capital", "LC") {
     }
@@ -26,27 +36,25 @@ contract MyWrappedToken is ERC20, Ownable, Pausable {
         emit BridgeContractSet(_bridgeContract);
     }
 
-    function mint(address to, uint256 amount) external {
-        require(msg.sender == bridgeContract, "Caller is not the bridge contract");
+    function mint(address to, uint256 amount) external onlyBridgeContract checkGasLimit {
         require(to != address(0), "Invalid address");
         require(amount > 0, "Amount must be greater than 0");
         _mint(to, amount);
         emit TokensMinted(to, amount);
     }
 
-    function burn(address from, uint256 amount) external {
-        require(msg.sender == bridgeContract, "Caller is not the bridge contract");
+    function burn(address from, uint256 amount) external onlyBridgeContract checkGasLimit {
         require(from != address(0), "Invalid address");
         require(amount > 0, "Amount must be greater than 0");
         _burn(from, amount);
         emit TokensBurned(from, amount);
     }
 
-    function pause() external onlyOwner {
+    function pause() external onlyOwner checkGasLimit {
         _pause();
     }
 
-    function unpause() external onlyOwner {
+    function unpause() external onlyOwner checkGasLimit {
         _unpause();
     }
 
