@@ -30,6 +30,25 @@ The `LotusCapital.sol` contract is a basic ERC20 token contract written in Solid
   - `allowance(address owner, address spender)`: Returns the remaining token allowance for a specific spender address.
   - `transferFrom(address sender, address recipient, uint256 amount)`: Transfers tokens from one address to another on behalf of a sender address.
 
+## Folder/File Structure
+
+```
+parent directory
+..
+├── BNB Bridge.sol
+│   ├── (File)
+│   ├── Create BNB Bridge.sol
+│   └── 47 minutes ago
+├── Testing BNB Token.sol
+│   ├── (File)
+│   ├── Update Testing BNB Token.sol
+│   └── 2 days ago
+└── readme.md
+    ├── (File)
+    ├── Update readme.md
+    └── 2 days ago
+```
+
 ## Usage
 
 To use the `LotusCapital.sol` contract, you can deploy it to an Ethereum network using tools such as Remix, Truffle, or Hardhat. Once deployed, you can interact with the contract by calling its public functions to perform various operations such as transferring tokens, approving token allowances, and checking token balances.
