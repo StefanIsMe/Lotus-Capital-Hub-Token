@@ -37,12 +37,10 @@ parent directory
 ..
 ├── BNB Bridge.sol
 │   ├── (File)
-│   ├── Create BNB Bridge.sol
-│   └── 47 minutes ago
+│   └── Create BNB Bridge.sol
 ├── Testing BNB Token.sol
 │   ├── (File)
-│   ├── Update Testing BNB Token.sol
-│   └── 2 days ago
+│   └── Update Testing BNB Token.sol
 └── readme.md
     ├── (File)
     └── Update readme.md
