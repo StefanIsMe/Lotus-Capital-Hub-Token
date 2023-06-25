@@ -1,64 +1,50 @@
-// SPDX-License-Identifier: MIT
-/// @title PolygonWrapperToken 
-/// @notice This contract is a wrapper token for BNB on Polygon zkEVM 
-/// @dev This contract inherits from ERC20, Ownable, and Pausable 
-/// @dev If you find a bug or security issue in this code, please contact info@lotuscapitalhub.com
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract LotusCapitalTestToken is ERC20, Ownable, Pausable {
-    address bridgeContract; 
+contract TokenChild is ERC20, ERC20Burnable, Pausable, Ownable {
 
-    event BridgeContractSet(address indexed bridgeContract);
-    event TokensMinted(address indexed to, uint256 amount);
-    event TokensBurned(address indexed from, uint256 amount);
+    address bridge;
 
-    modifier checkGasLimit() {
-        require(gasleft() >= 30000, "Insufficient gas");
-        _;
+    constructor (address _bridge) ERC20("Lotus Capital", "LC") {
+        bridge = _bridge;
     }
 
-    modifier onlyBridgeContract() {
-        require(msg.sender == bridgeContract, "Caller is not the bridge contract");
-        _;
+    function mint(address recipient, uint256 amount) public virtual onlyBridge whenNotPaused {
+        _mint(recipient, amount);
+        emit Mint(recipient, amount);
     }
 
-    constructor() ERC20("Lotus Capital", "LC") {
+    function burn(uint256 amount) public override(ERC20Burnable) virtual onlyBridge whenNotPaused {
+        super.burn(amount);
+        emit Burn(msg.sender, amount);
     }
 
-    function setBridgeContract(address _bridgeContract) external onlyOwner {
-        require(_bridgeContract != address(0), "Invalid bridge contract address");
-        bridgeContract = _bridgeContract;
-        emit BridgeContractSet(_bridgeContract);
+    function burnFrom(address account, uint256 amount) public override(ERC20Burnable) virtual onlyBridge whenNotPaused {
+        super.burnFrom(account, amount);
+        emit Burn(account, amount);
     }
 
-    function mint(address to, uint256 amount) external onlyBridgeContract checkGasLimit {
-        require(to != address(0), "Invalid address");
-        require(amount > 0, "Amount must be greater than 0");
-        _mint(to, amount);
-        emit TokensMinted(to, amount);
-    }
-
-    function burn(address from, uint256 amount) external onlyBridgeContract checkGasLimit {
-        require(from != address(0), "Invalid address");
-        require(amount > 0, "Amount must be greater than 0");
-        _burn(from, amount);
-        emit TokensBurned(from, amount);
-    }
-
-    function pause() external onlyOwner checkGasLimit {
+    function pause() public onlyOwner {
         _pause();
+        emit Paused(msg.sender);
     }
 
-    function unpause() external onlyOwner checkGasLimit {
+    function unpause() public onlyOwner {
         _unpause();
+        emit Unpaused(msg.sender);
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal whenNotPaused override {
-        super._beforeTokenTransfer(from, to, amount);
+    modifier onlyBridge() {
+        require(msg.sender == bridge, "Only the bridge contract can call this function");
+        _;
     }
+
+    event Mint(address indexed recipient, uint256 amount);
+    event Burn(address indexed account, uint256 amount);
+    event Paused(address account);
+    event Unpaused(address account);
 }
