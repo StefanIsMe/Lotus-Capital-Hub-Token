@@ -102,5 +102,3 @@ Please note that the successful bridging of tokens between Binance Smart Chain a
 ## License
 
 This project is licensed under the [MIT License](https://github.com/StefanIsMe/Lotus-Capital-Hub-Token/blob/main/LICENSE).
-
-This project is licensed under the [MIT License](https://github.com/StefanIsMe/Lotus-Capital-Hub-Token/blob/main/LICENSE).
