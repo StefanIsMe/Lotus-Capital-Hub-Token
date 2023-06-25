@@ -1,6 +1,6 @@
 # LotusCapitalTestToken
 
-LotusCapitalTestToken is a smart contract that serves as a wrapper token for BNB on Polygon zkEVM. It inherits from ERC20, Ownable, and Pausable contracts.
+LotusCapitalTestToken is a smart contract that serves as a wrapper token for BNB on Polygon zkEVM. It inherits from ERC20, ERC20Burnable, Pausable, and Ownable contracts.
 
 ## Imports
 
@@ -8,22 +8,38 @@ The contract imports the following dependencies:
 
 ```solidity
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 ```
 
 ## Variables
 
 The contract defines the following variables:
 
-- `bridgeContract`: The address of the bridge contract used for minting and burning tokens.
+- `bridge`: The address of the bridge contract used for minting and burning tokens.
 
 ## Modifiers
 
-The contract defines the following modifiers:
+The contract defines the following modifier:
 
-- `checkGasLimit()`: Checks if the remaining gas is sufficient.
-- `onlyBridgeContract()`: Restricts access to the bridge contract.
+- `onlyBridge()`: Restricts access to the bridge contract.
+
+## Version Number (Alpha Release): 1.0.0
+
+## Changelog
+
+The following changes have been made between the previous version and the current version:
+
+- Upgraded the contract to use `ERC20Burnable` from OpenZeppelin to add burning functionality.
+- Updated the `mint` function to use `virtual` and `override` keywords.
+- Updated the `burn` function to use `virtual` and `override` keywords.
+- Added the `burnFrom` function to allow burning tokens from a specified account.
+- Removed the `checkGasLimit` modifier.
+- Updated the `pause` function to use the `onlyOwner` modifier.
+- Updated the `unpause` function to use the `onlyOwner` modifier.
+- Renamed the `BridgeContractSet` event to `Mint` and added the `Burn` event to emit token burning events.
+- Renamed the `pause` event to `Paused` and added the `Unpaused` event to emit pause/unpause events.
 
 ## Deployment to Polygon zkEVM Testnet
 
@@ -33,14 +49,10 @@ This contract has been deployed to the Polygon zkEVM testnet. The deployed contr
 
 The contract provides the following functions and features:
 
-- `setBridgeContract(address _bridgeContract) external onlyOwner`: Sets the address of the bridge contract.
-- `mint(address to, uint256 amount) external onlyBridgeContract checkGasLimit`: Mints tokens to the specified address. Only the bridge contract can call this function, and it checks the gas limit.
-- `burn(address from, uint256 amount) external onlyBridgeContract checkGasLimit`: Burns tokens from the specified address. Only the bridge contract can call this function, and it checks the gas limit.
-- `pause() external onlyOwner checkGasLimit`: Pauses contract operations. Only the contract owner can call this function, and it checks the gas limit.
-- `unpause() external onlyOwner checkGasLimit`: Unpauses contract operations. Only the contract owner can call this function, and it checks the gas limit.
+- `mint(address recipient, uint256 amount) public virtual onlyBridge whenNotPaused`: Mints tokens to the specified recipient. Only the bridge contract can call this function, and it can only be called when the contract is not paused.
+- `burn(uint256 amount) public override(ERC20Burnable) virtual onlyBridge whenNotPaused`: Burns tokens from the caller's balance. Only the bridge contract can call this function, and it can only be called when the contract is not paused.
+- `burnFrom(address account, uint256 amount) public override(ERC20Burnable) virtual onlyBridge whenNotPaused`: Burns tokens from the specified account. Only the bridge contract can call this function, and it can only be called when the contract is not paused.
+- `pause() public onlyOwner`: Pauses contract operations. Only the contract
 
-Additionally, the contract overrides the `_beforeTokenTransfer` function from the ERC20 contract to include pausing functionality.
-
-## Contact
-
-If you find a bug or security issue in this code, please contact info@lotuscapitalhub.com.
+ owner can call this function.
+- `unpause() public onlyOwner`: Unpauses contract operations. Only the contract owner can call this function.
