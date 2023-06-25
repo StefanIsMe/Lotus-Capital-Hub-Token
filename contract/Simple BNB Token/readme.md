@@ -2,6 +2,17 @@
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/StefanIsMe/Lotus-Capital-Hub-Token/blob/main/LICENSE)
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Folder/File Structure](#folderfile-structure)
+- [Testing BNB Token Contract Details](#testing-bnb-token-contract-details)
+- [BNB Bridge.sol Documentation](#bnb-bridgesol-documentation)
+  - [Contract Details](#contract-details)
+  - [Interactions with Testing BNB Token.sol](#interactions-with-testing-bnb-tokensol)
+  - [Usage](#usage)
+- [License](#license)
+
 ## Introduction
 
 The purpose of this project is to develop a bridge between Binance Smart Chain (BSC) and the Polygon ZK-EVM. The main goal is to enable the seamless transfer of assets between these two blockchains. Due to compliance issues with EIP-170, the original Lotus Capital token (LC), which is a BabyToken clone, cannot be deployed. Therefore, a testing BNB token (TestBNB) has been created to simulate the functionality of the mainnet token during the testing phase. The BNB Bridge contract serves as the lock contract, facilitating the communication and message relay between the Binance Smart Chain and the Polygon ZK-EVM.
@@ -24,7 +35,7 @@ parent directory
 
 ## Testing BNB Token Contract Details
 
-The `LotusCapital.sol` contract is a basic ERC20 token contract written in Solidity. It represents the Lotus Capital token (LC) on the Ethereum blockchain.
+The `Testing BNB Token.sol` contract is a basic ERC20 token contract written in Solidity. It represents the testing BNB token (TestBNB) on the Binance Smart Chain.
 
 - SPDX-License-Identifier: MIT: This line specifies the license under which the contract is released. In this case, it is released under the MIT license.
 - Pragma Directive: The `pragma solidity ^0.8.9;` statement specifies the version of Solidity the contract is written in. The caret symbol (^) indicates that any compatible version greater than or equal to 0.8.9 can be used.
@@ -44,23 +55,19 @@ The `LotusCapital.sol` contract is a basic ERC20 token contract written in Solid
   - `symbol()`: Returns the symbol of the token.
   - `decimals()`: Returns the number of decimal places for the token.
   - `totalSupply()`: Returns the total supply of the token.
-  - `balanceOf(address account)`: Returns the token balance of a specific address.
+ 
+
+ - `balanceOf(address account)`: Returns the token balance of a specific address.
   - `transfer(address recipient, uint256 amount)`: Transfers tokens from the sender's address to the recipient's address.
   - `approve(address spender, uint256 amount)`: Approves a specific amount of tokens to be spent by the designated spender address.
   - `allowance(address owner, address spender)`: Returns the remaining token allowance for a specific spender address.
   - `transferFrom(address sender, address recipient, uint256 amount)`: Transfers tokens from one address to another on behalf of a sender address.
 
-## Usage
-
-To use the `LotusCapital.sol` contract, you can deploy it to an Ethereum network using tools such as Remix, Truffle, or Hardhat. Once deployed, you can interact with the contract by calling its public functions to perform various operations such as transferring tokens, approving token allowances, and checking token balances.
-
-Certainly! Here's an updated version of the documentation for the `BNB Bridge.sol` contract, including how it interacts with the `Testing BNB Token.sol` contract:
-
-# BNB Bridge.sol Documentation
+## BNB Bridge.sol Documentation
 
 The `BNB Bridge.sol` contract is a Solidity smart contract that facilitates the bridging of tokens between Binance Smart Chain (BSC) and the Ethereum blockchain. It interacts with the `Testing BNB Token.sol` contract to lock and unlock tokens during the bridging process.
 
-## Contract Details
+### Contract Details
 
 - SPDX-License-Identifier: MIT: This line specifies the license under which the contract is released. In this case, it is released under the MIT license.
 - Pragma Directive: The `pragma solidity ^0.8.0;` statement specifies the version of Solidity the contract is written in. The caret symbol (^) indicates that any compatible version greater than or equal to 0.8.0 can be used.
@@ -78,7 +85,7 @@ The `BNB Bridge.sol` contract is a Solidity smart contract that facilitates the 
 - Modifier: 
   - `onlyGateway`: This modifier restricts the execution of certain functions to be only allowed by the gateway contract. It ensures that only the designated gateway contract can call the `lockTokens` and `unlockTokens` functions.
 
-## Interactions with Testing BNB Token.sol
+### Interactions with Testing BNB Token.sol
 
 The `BNB Bridge.sol` contract interacts with the `Testing BNB Token.sol` contract in the following way:
 
@@ -86,7 +93,9 @@ The `BNB Bridge.sol` contract interacts with the `Testing BNB Token.sol` contrac
 2. In the `unlockTokens` function of `BNB Bridge.sol`, the contract calls the `transfer` function of the `Testing BNB Token.sol` contract to transfer the bridged amount of tokens back to the requester's address on the Binance Smart Chain.
 3. This interaction ensures that the unlocked tokens from the bridge contract are transferred to the designated address on the Binance Smart Chain, allowing for seamless token transfers between the two blockchains.
 
-## Usage
+###
+
+ Usage
 
 To use the `BNB Bridge.sol` contract, follow these steps:
 
