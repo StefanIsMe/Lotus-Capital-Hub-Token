@@ -45,8 +45,7 @@ parent directory
 │   └── 2 days ago
 └── readme.md
     ├── (File)
-    ├── Update readme.md
-    └── 2 days ago
+    └── Update readme.md
 ```
 
 ## Usage
