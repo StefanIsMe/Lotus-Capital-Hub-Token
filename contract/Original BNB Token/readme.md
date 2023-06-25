@@ -17,7 +17,7 @@ Lotus Capital (LC) is a crypto token that serves as the native currency of the L
 Lotus Capital (LC) is deployed on the Binance Smart Chain (BSC) and has a unique contract address: `0xae59cbc550890bc621ef0749d7d841994986ec51`. You can view the token's contract details on [BSCScan](https://bscscan.com/token/0xae59cbc550890bc621ef0749d7d841994986ec51). This link provides insights into the token's supply, transactions, and other essential information.
 
 ## Features
-Lotus Capital (LC) inherits several features from its base token, Baby Token, and also includes specific functionalities developed by Lotus Capital Hub. The following features are currently implemented:
+Lotus Capital (LC) is a clone of the contract, Baby Token. The following features are currently implemented:
 
 ### Liquidity
 Lotus Capital incorporates a 1% liquidity tax on token transfers. This tax contributes to the liquidity pool associated with the token, enhancing its stability and liquidity in the market. The liquidity pool ensures ample liquidity for buying and selling LC tokens.
