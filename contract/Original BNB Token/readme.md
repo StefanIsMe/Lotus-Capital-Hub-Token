@@ -1,5 +1,3 @@
-Certainly! Here's the updated documentation with the license information and details about ownership renouncement:
-
 # Lotus Capital Documentation
 
 Welcome to the official documentation for Lotus Capital (LC), the original token of Lotus Capital Hub. This documentation provides essential information about Lotus Capital, including its purpose, deployment details, features, tax structure, and ownership renouncement.
