@@ -93,9 +93,7 @@ The `BNB Bridge.sol` contract interacts with the `Testing BNB Token.sol` contrac
 2. In the `unlockTokens` function of `BNB Bridge.sol`, the contract calls the `transfer` function of the `Testing BNB Token.sol` contract to transfer the bridged amount of tokens back to the requester's address on the Binance Smart Chain.
 3. This interaction ensures that the unlocked tokens from the bridge contract are transferred to the designated address on the Binance Smart Chain, allowing for seamless token transfers between the two blockchains.
 
-###
-
- Usage
+### Usage
 
 To use the `BNB Bridge.sol` contract, follow these steps:
 
@@ -107,6 +105,28 @@ To use the `BNB Bridge.sol` contract, follow these steps:
 4. Ensure proper integration and configuration with the `Testing BNB Token.sol` contract to enable seamless bridging of tokens between Binance Smart Chain and Ethereum.
 
 Please note that the successful bridging of tokens between Binance Smart Chain and Ethereum requires coordination and integration between the `BNB Bridge.sol` contract and the `Testing BNB Token.sol` contract.
+
+## Deployment of Testing BNB Token.sol to Binance Smart Chain Testnet
+
+The `Testing BNB Token.sol` contract has been deployed to the Binance Smart Chain (BSC) Testnet and can be found at the following contract address: [0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd](https://testnet.bscscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd).
+
+To facilitate testing and experimentation, the contract has been deployed on the BSC Testnet, which allows developers to interact with the token in a simulated environment without incurring any real financial costs.
+
+The deployment of the `Testing BNB Token.sol` contract on the BSC Testnet provides a sandboxed environment where users can explore the functionalities of the token, such as transferring tokens, checking balances, and approving token allowances, without affecting the main Binance Smart Chain network.
+
+By accessing the contract address [0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd](https://testnet.bscscan.com/token/0xf423c8fafD0Aa3ee911AfBC44f4D8eA713f7C9Dd) on the BSC Testnet, you can review the contract details, including the contract source code, transaction history, and token balances.
+
+Please note that the `Testing BNB Token.sol` contract deployed on the BSC Testnet is specifically intended for testing purposes and does not represent the mainnet deployment of the token.
+
+## Deployment of BNB Bridge.sol to Binance Smart Chain Testnet
+
+Apologies for the confusion. I see that you have deployed the `BNB Bridge.sol` contract to the Binance Smart Chain Testnet. The contract can be found at the following address: [0x889a20ea66c0e4b9069aFd2C50bAdD24493a9473](https://testnet.bscscan.com/address/0x889a20ea66c0e4b9069aFd2C50bAdD24493a9473) on the Binance Smart Chain Testnet.
+
+By deploying the `BNB Bridge.sol` contract on the Binance Smart Chain Testnet, you can test and validate the functionality of the bridge before deploying it to the mainnet. This allows for thorough testing and ensures that the bridge operates as intended before engaging with real assets on the mainnet.
+
+At the provided contract address, you can access various details about the contract, including the contract source code, transaction history, and contract events specific to the Binance Smart Chain Testnet.
+
+Please note that deploying the contract on the testnet environment is an essential step in the development process to ensure its stability, security, and proper functioning. Once thoroughly tested and validated, the contract can be deployed to the Binance Smart Chain Mainnet for production usage.
 
 ## License
 

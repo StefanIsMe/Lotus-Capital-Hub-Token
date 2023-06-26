@@ -49,6 +49,4 @@ contract SideBridge {
       require(msg.sender == owner, "Only owner can execute this function");
       _;
     }
-    
-
 }
