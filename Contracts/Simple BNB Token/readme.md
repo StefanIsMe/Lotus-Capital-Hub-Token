@@ -120,7 +120,7 @@ Please note that the `Testing BNB Token.sol` contract deployed on the BSC Testne
 
 ## Deployment of BNB Bridge.sol to Binance Smart Chain Testnet
 
-Apologies for the confusion. I see that you have deployed the `BNB Bridge.sol` contract to the Binance Smart Chain Testnet. The contract can be found at the following address: [0x889a20ea66c0e4b9069aFd2C50bAdD24493a9473](https://testnet.bscscan.com/address/0x889a20ea66c0e4b9069aFd2C50bAdD24493a9473) on the Binance Smart Chain Testnet.
+The contract can be found at the following address: [0x889a20ea66c0e4b9069aFd2C50bAdD24493a9473](https://testnet.bscscan.com/address/0x889a20ea66c0e4b9069aFd2C50bAdD24493a9473) on the Binance Smart Chain Testnet.
 
 By deploying the `BNB Bridge.sol` contract on the Binance Smart Chain Testnet, you can test and validate the functionality of the bridge before deploying it to the mainnet. This allows for thorough testing and ensures that the bridge operates as intended before engaging with real assets on the mainnet.
 
