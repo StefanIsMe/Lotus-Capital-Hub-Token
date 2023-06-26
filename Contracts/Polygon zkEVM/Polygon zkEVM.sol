@@ -6,12 +6,18 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract TokenChild is ERC20, ERC20Burnable, Pausable, Ownable {
+contract LotusCapitalTestToken is ERC20, ERC20Burnable, Pausable, Ownable {
 
-    address bridge;
+    address private bridge;
 
-    constructor (address _bridge) ERC20("Lotus Capital", "LC") {
+    constructor() ERC20("Lotus Capital", "LC") {
+        bridge = msg.sender; // Set the bridge address to the contract deployer
+    }
+
+    function setBridge(address _bridge) external onlyOwner {
+        require(_bridge != address(0), "Bridge address cannot be zero");
         bridge = _bridge;
+        emit BridgeChanged(_bridge);
     }
 
     function mint(address recipient, uint256 amount) public virtual onlyBridge whenNotPaused {
@@ -31,12 +37,10 @@ contract TokenChild is ERC20, ERC20Burnable, Pausable, Ownable {
 
     function pause() public onlyOwner {
         _pause();
-        emit Paused(msg.sender);
     }
 
     function unpause() public onlyOwner {
         _unpause();
-        emit Unpaused(msg.sender);
     }
 
     modifier onlyBridge() {
@@ -46,6 +50,5 @@ contract TokenChild is ERC20, ERC20Burnable, Pausable, Ownable {
 
     event Mint(address indexed recipient, uint256 amount);
     event Burn(address indexed account, uint256 amount);
-    event Paused(address account);
-    event Unpaused(address account);
+    event BridgeChanged(address newBridge);
 }

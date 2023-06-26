@@ -22,6 +22,18 @@ This repository contains smart contracts that facilitate the bridging of tokens 
 3. **IERC20Child.sol**
    - Description: This interface defines the functions that the child ERC20 token contract on the sidechain must implement. It extends the `IERC20` interface from the OpenZeppelin library.
 
+## Token Deployment
+
+A new version of the token has been deployed for testing purposes. The token contract address is `0x889a20ea66c0e4b9069aFd2C50bAdD24493a9473` on the Polygon zkEVM testnet. You can view the contract details by clicking [here](https://testnet-zkevm.polygonscan.com/address/0x889a20ea66c0e4b9069aFd2C50bAdD24493a9473).
+
+Please note that this deployment is for testing purposes only and may not represent the final production version of the token.
+
+## SideBridge Contract Deployment
+
+A new version of the SideBridge contract has been deployed for testing purposes. The contract address is `0xBcEF7A514e68B235e5Ad3c096B375FDe642bEAeF` on the Polygon zkEVM testnet. You can view the contract details by clicking [here](https://testnet-zkevm.polygonscan.com/address/0xBcEF7A514e68B235e5Ad3c096B375FDe642bEAeF).
+
+Please note that this deployment is for testing purposes only and may not represent the final production version of the SideBridge contract.
+
 ## Interactions
 
 1. The `PolygonZkEVM` contract represents the child token on the sidechain and can be deployed on the Polygon zkEVM sidechain.
@@ -53,6 +65,8 @@ For more details on the contract functionalities and usage, refer to the individ
 The current release is an alpha release.
 
 ## Changelog
+
+### [Alpha Release] - 2023-06-26
 
 ### [Alpha Release] - 2023-06-25
 
