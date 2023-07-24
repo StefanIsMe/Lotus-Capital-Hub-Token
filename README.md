@@ -14,5 +14,5 @@ setUseCustomAdapterParams:
 setMinGas:
 setTrustedRemoteAddress:
 
-Other Setup
-# Approve sender on token BNB token
+# Other Setup
+Approve sender on token BNB token
