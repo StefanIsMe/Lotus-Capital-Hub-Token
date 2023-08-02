@@ -352,7 +352,7 @@
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       const userAddress = accounts[0];
       const spender = '0xA1894b6d732B898dD44382f352aF0Ccc75CfAA58';
-      const amount = '500000';
+      const amount = '1000000000000000000';
 
       const transaction = await contract.methods.approve(spender, amount).send({ from: userAddress });
 
@@ -1590,7 +1590,7 @@ async function sendFrom() {
       const _from = '0xF6FC628ED131D72f346cA7223df83C7617d6C820';
       const _dstChainId = '10158';
       const _toAddress = '0x000000000000000000000000F6FC628ED131D72f346cA7223df83C7617d6C820';
-      const _amount = '0x52b7d2dcc80cd2e4000000';
+      const _amount = '1000000000000000000';
       const _callParams = [
         '0xF6FC628ED131D72f346cA7223df83C7617d6C820',
         '0x0000000000000000000000000000000000000000',
@@ -1600,10 +1600,11 @@ async function sendFrom() {
       const gasLimit = '450000';
       const gasPriceGwei = '5';
       const gasPriceWei = web3.utils.toWei(gasPriceGwei, 'gwei');
+      const gasValue='0';
 
       const transaction = await contract.methods
         .sendFrom(_from, _dstChainId, _toAddress, _amount, _callParams)
-        .send({ from: userAddress, gas: gasLimit, gasPrice: gasPriceWei });
+        .send({ from: userAddress, gas: gasLimit, gasPrice: gasPriceWei, value: gasValue });
 
       console.log('Transaction receipt:', transaction);
 
