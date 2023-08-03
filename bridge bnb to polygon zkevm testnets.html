@@ -1597,14 +1597,13 @@ async function sendFrom() {
         '0x000100000000000000000000000000000000000000000000000000000000000927C0',
       ];
 
-      const gasLimit = '450000';
+      const gasLimit = '3000000';
       const gasPriceGwei = '5';
       const gasPriceWei = web3.utils.toWei(gasPriceGwei, 'gwei');
-      const gasValue='0';
 
       const transaction = await contract.methods
         .sendFrom(_from, _dstChainId, _toAddress, _amount, _callParams)
-        .send({ from: userAddress, gas: gasLimit, gasPrice: gasPriceWei, value: gasValue });
+        .send({ from: userAddress, gas: gasLimit, gasPrice: gasPriceWei, value: web3.utils.toWei('0.0013', 'ether') });
 
       console.log('Transaction receipt:', transaction);
 
