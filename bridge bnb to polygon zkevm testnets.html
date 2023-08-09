@@ -15,7 +15,7 @@
 <!-- Add the New Button to Call "sendFrom" function -->
 <button id="sendFromButton" style="background-color: white; font-size: 30px; color: black;" onclick="sendFrom()">Call sendFrom function</button>
 
-<script async>
+<script>
 // Function to get a concise human-readable error message
 function getErrorMessage(error) {
   if (error.code === 4001) {
@@ -59,7 +59,20 @@ window.addEventListener('load', async function () {
           switchingStatus.textContent = ''; // Clear the switching status
 
           // Refresh the connection status after switching
-          await toggleConnection();
+          const newChainId = await ethereum.request({ method: 'eth_chainId' });
+          if (newChainId === '0x61') {
+            statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
+            statusField.style.color = 'white'; // Set the font color to white
+            connectButton.textContent = 'Connected to MetaMask';
+            connectButton.style.color = 'grey'; // Set the font color to grey
+            connectButton.disabled = true; // Disable the button
+          } else {
+            statusField.textContent = 'Connected to MetaMask, but to the wrong network.';
+            statusField.style.color = 'white'; // Set the font color to white
+            connectButton.textContent = 'Connect to MetaMask';
+            connectButton.style.color = 'black'; // Set the font color to black
+            connectButton.disabled = false; // Enable the button
+          }
         }
       } else {
         // User is not connected
@@ -91,15 +104,7 @@ async function toggleConnection() {
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
 
-        const chainId = await ethereum.request({ method: 'eth_chainId' });
-        if (chainId !== '0x61') {
-          switchingStatus.textContent = 'Switching to BSC Test Net...';
-          await switchToBscTestnet();
-          switchingStatus.textContent = ''; // Clear the switching status
-
-          // Refresh the connection status after switching
-          await toggleConnection();
-        }
+        document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
       } else {
         // Handle scenario when button is clicked while already connected
         console.log('Already connected to MetaMask.');
@@ -139,6 +144,7 @@ async function switchToBscTestnet() {
   }
 }
 </script>
+
 
 <script async>
   async function approveSpend() {
