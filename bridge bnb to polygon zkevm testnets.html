@@ -30,16 +30,12 @@ window.addEventListener('load', async function () {
   const statusField = document.getElementById('statusField');
   const switchingStatus = document.getElementById('switchingStatus');
 
-  // Enable the Connect to MetaMask button now that the website has finished loading
-  connectButton.removeAttribute('disabled');
-  connectButton.style.color = 'black'; // Set font color to black when enabled
-
-  // Update the status to indicate that the website has finished loading
-  statusField.textContent = 'Website loaded. Connect your MetaMask wallet.';
-  statusField.style.color = 'white'; // Set the font color to white
-
   // Check MetaMask connection status
   if (typeof window.ethereum !== 'undefined') {
+    // Enable the Connect to MetaMask button now that the website has finished loading
+    connectButton.removeAttribute('disabled');
+    connectButton.style.color = 'black'; // Set font color to black when enabled
+
     try {
       const accounts = await ethereum.request({ method: 'eth_accounts' });
       if (accounts.length > 0) {
@@ -87,7 +83,7 @@ window.addEventListener('load', async function () {
     statusField.style.color = 'white'; // Set the font color to white
   }
 });
-
+	
 async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
     try {
