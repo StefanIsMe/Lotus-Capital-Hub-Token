@@ -45,11 +45,17 @@ window.addEventListener('load', async function () {
       if (accounts.length > 0) {
         // User is already connected
         const userAddress = accounts[0];
-        statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
-        statusField.style.color = 'white'; // Set the font color to white
-        connectButton.textContent = 'Connected to MetaMask';
-        connectButton.style.color = 'grey'; // Set the font color to grey
-        connectButton.disabled = true; // Disable the button
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+
+        if (chainId === '0x61') {
+          statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
+          statusField.style.color = 'white'; // Set the font color to white
+          connectButton.textContent = 'Connected to MetaMask';
+          connectButton.style.color = 'grey'; // Set the font color to grey
+          connectButton.disabled = true; // Disable the button
+        } else {
+          await switchToBscTestnet();
+        }
       } else {
         // User is not connected
         statusField.textContent = 'Not connected to MetaMask';
@@ -81,12 +87,14 @@ async function toggleConnection() {
         statusField.style.color = 'white'; // Set the font color to white
 
         const chainId = await ethereum.request({ method: 'eth_chainId' });
-        if (chainId === '0x61') {
+        if (chainId !== '0x61') {
+          await switchToBscTestnet();
+        } else {
+          statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
+          statusField.style.color = 'white'; // Set the font color to white
           connectButton.textContent = 'Connected to MetaMask';
           connectButton.style.color = 'grey'; // Set the font color to grey
           connectButton.disabled = true; // Disable the button
-        } else {
-          switchToBscTestnet();
         }
       } else {
         // Handle scenario when button is clicked while already connected
@@ -131,6 +139,7 @@ async function switchToBscTestnet() {
   }
 }
 </script>
+
 <script async>
   async function approveSpend() {
     try {
