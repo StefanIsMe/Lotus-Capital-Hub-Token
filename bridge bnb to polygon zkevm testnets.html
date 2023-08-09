@@ -9,8 +9,6 @@
 <!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
 <button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="toggleConnection()" disabled>Connect to MetaMask</button>
 
-
-
 <!-- Add the Approve Spend button with inline CSS styles -->
 <button id="approveButton" style="background-color: white; font-size: 30px; color: black;" onclick="approveSpend()">Approve Spend</button>
 <!-- Add the New Button to Call "sendFrom" function -->
@@ -67,7 +65,8 @@ window.addEventListener('load', async function () {
 async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
     try {
-      if (!ethereum.selectedAddress) {
+      const accounts = await ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length === 0) {
         // Connect to MetaMask
         const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
         const userAddress = accounts[0];
@@ -80,8 +79,8 @@ async function toggleConnection() {
 
         document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
       } else {
-        // Disconnect from MetaMask (clear selected address)
-        ethereum.selectedAddress = null;
+        // Disconnect from MetaMask
+        await ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: {} }] });
 
         // Update the status field and UI to reflect disconnection
         const statusField = document.getElementById('statusField');
