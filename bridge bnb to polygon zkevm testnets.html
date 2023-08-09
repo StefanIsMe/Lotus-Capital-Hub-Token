@@ -33,6 +33,7 @@
       showError('MetaMask is not available. Please install MetaMask.');
     }
   }
+	
 
   async function switchToBscTestnet() {
     try {
@@ -59,7 +60,8 @@
       showError('Error switching to BSC Testnet. Please try again.');
     }
   }
-
+</script>
+<script async>
   async function approveSpend() {
     try {
       if (typeof window.ethereum === 'undefined') {
@@ -364,7 +366,8 @@
       showError('Transaction error. Please try again.');
     }
   }
-
+</script>
+<script async>
 
 async function sendFrom() {
     try {
