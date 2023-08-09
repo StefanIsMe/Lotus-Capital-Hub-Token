@@ -51,6 +51,7 @@ window.addEventListener('load', async function () {
           connectButton.disabled = true; // Disable the button
         } else {
           switchingStatus.textContent = 'Switching to BSC Test Net...';
+          connectButton.disabled = true; // Disable the button during network switch
           await switchToBscTestnet();
           switchingStatus.textContent = ''; // Clear the switching status
 
@@ -140,7 +141,6 @@ async function switchToBscTestnet() {
   }
 }
 </script>
-
 
 <script async>
   async function approveSpend() {
