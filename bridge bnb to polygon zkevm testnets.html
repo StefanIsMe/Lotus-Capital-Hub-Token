@@ -15,7 +15,7 @@
 <!-- Add the New Button to Call "sendFrom" function -->
 <button id="sendFromButton" style="background-color: white; font-size: 30px; color: black;" onclick="sendFrom()">Call sendFrom function</button>
 
-<script>
+<script async>
 // Function to get a concise human-readable error message
 function getErrorMessage(error) {
   if (error.code === 4001) {
@@ -54,7 +54,12 @@ window.addEventListener('load', async function () {
           connectButton.style.color = 'grey'; // Set the font color to grey
           connectButton.disabled = true; // Disable the button
         } else {
+          switchingStatus.textContent = 'Switching to BSC Test Net...';
           await switchToBscTestnet();
+          switchingStatus.textContent = ''; // Clear the switching status
+
+          // Refresh the connection status after switching
+          await toggleConnection();
         }
       } else {
         // User is not connected
@@ -88,13 +93,12 @@ async function toggleConnection() {
 
         const chainId = await ethereum.request({ method: 'eth_chainId' });
         if (chainId !== '0x61') {
+          switchingStatus.textContent = 'Switching to BSC Test Net...';
           await switchToBscTestnet();
-        } else {
-          statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
-          statusField.style.color = 'white'; // Set the font color to white
-          connectButton.textContent = 'Connected to MetaMask';
-          connectButton.style.color = 'grey'; // Set the font color to grey
-          connectButton.disabled = true; // Disable the button
+          switchingStatus.textContent = ''; // Clear the switching status
+
+          // Refresh the connection status after switching
+          await toggleConnection();
         }
       } else {
         // Handle scenario when button is clicked while already connected
@@ -111,9 +115,7 @@ async function toggleConnection() {
 }
 
 async function switchToBscTestnet() {
-  const switchingStatus = document.getElementById('switchingStatus');
   try {
-    switchingStatus.textContent = 'Switching to BSC Test Net...';
     await ethereum.request({
       method: 'wallet_addEthereumChain',
       params: [
@@ -131,11 +133,9 @@ async function switchToBscTestnet() {
       ],
     });
     console.log('Switched to BSC Testnet');
-    switchingStatus.textContent = ''; // Clear the switching status
   } catch (error) {
     console.error('Error switching to BSC Testnet:', error);
     showError('Error switching to BSC Testnet. ' + getErrorMessage(error));
-    switchingStatus.textContent = ''; // Clear the switching status on error
   }
 }
 </script>
