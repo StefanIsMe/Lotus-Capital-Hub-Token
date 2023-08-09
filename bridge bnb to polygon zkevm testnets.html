@@ -7,7 +7,7 @@
 </div>
 
 <!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
-<button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="connectToMetaMask()" disabled>Connect to MetaMask</button>
+<button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="toggleConnection()" disabled>Connect to MetaMask</button>
 
 
 
@@ -18,25 +18,38 @@
 
 
 <script>
-// Connect to MetaMask on button click
-async function connectToMetaMask() {
+// Connect to MetaMask or disconnect if already connected
+async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
     try {
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-      const userAddress = accounts[0];
-      console.log('Connected to MetaMask. User Address:', userAddress);
+      if (!ethereum.selectedAddress) {
+        // Connect to MetaMask
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        const userAddress = accounts[0];
+        console.log('Connected to MetaMask. User Address:', userAddress);
 
-      // Update the status field with the connected status and user address
-      const statusField = document.getElementById('statusField');
-      statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
-      statusField.style.color = 'white'; // Set the font color to white
+        // Update the status field with the connected status and user address
+        const statusField = document.getElementById('statusField');
+        statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
+        statusField.style.color = 'white'; // Set the font color to white
 
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
-      if (chainId === '0x61') {
-        console.log('Switched to BSC Testnet');
-        document.getElementById('connectButton').textContent = 'Connected to MetaMask';
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+        if (chainId === '0x61') {
+          console.log('Switched to BSC Testnet');
+          document.getElementById('connectButton').textContent = 'Connected to MetaMask';
+        } else {
+          await switchToBscTestnet();
+        }
       } else {
-        await switchToBscTestnet();
+        // Disconnect from MetaMask
+        await ethereum.request({ method: 'eth_logout' });
+
+        // Update the status field and UI to reflect disconnection
+        const statusField = document.getElementById('statusField');
+        statusField.textContent = 'Not connected to MetaMask';
+        statusField.style.color = 'white'; // Set the font color to white
+
+        document.getElementById('connectButton').textContent = 'Connect to MetaMask';
       }
     } catch (error) {
       console.error('Error connecting to MetaMask:', error);
