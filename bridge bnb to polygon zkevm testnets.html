@@ -15,7 +15,7 @@
 <!-- Add the New Button to Call "sendFrom" function -->
 <button id="sendFromButton" style="background-color: white; font-size: 30px; color: black;" onclick="sendFrom()">Call sendFrom function</button>
 
-<script>
+<script async>
 // Function to get a concise human-readable error message
 function getErrorMessage(error) {
   if (error.code === 4001) {
@@ -29,6 +29,10 @@ window.addEventListener('load', async function () {
   const connectButton = document.getElementById('connectButton');
   const statusField = document.getElementById('statusField');
   const switchingStatus = document.getElementById('switchingStatus');
+
+  // Enable the Connect to MetaMask button now that the website has finished loading
+  connectButton.removeAttribute('disabled');
+  connectButton.style.color = 'black'; // Set font color to black when enabled
 
   // Check MetaMask connection status
   if (typeof window.ethereum !== 'undefined') {
@@ -75,16 +79,12 @@ window.addEventListener('load', async function () {
     } catch (error) {
       console.error('Error checking MetaMask connection:', error);
     }
-    
-    // Enable the Connect to MetaMask button now that the website has finished loading
-    connectButton.removeAttribute('disabled');
-    connectButton.style.color = 'black'; // Set font color to black when enabled
   } else {
     statusField.textContent = 'MetaMask is not available. Please install MetaMask.';
     statusField.style.color = 'white'; // Set the font color to white
   }
 });
-	
+  
 async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
     try {
