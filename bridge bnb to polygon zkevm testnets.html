@@ -6,7 +6,7 @@
 
 <!-- Add a status field to display connection status and errors -->
 <div style="margin-top: 10px;">
-  <p id="statusField" style="font-size: 16px; color: white;">Not connected to MetaMask</p>
+  <p id="statusField" style="font-size: 16px; color: white;">Loading...</p>
 </div>
 
 
@@ -17,41 +17,50 @@
 
 
 <script>
-async function connectToMetaMask() {
-  if (typeof window.ethereum !== 'undefined') {
-    try {
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-      const userAddress = accounts[0];
-      console.log('Connected to MetaMask. User Address:', userAddress);
-      
-      // Update the status field with the connected status and user address
-      const statusField = document.getElementById('statusField');
-      statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
+// Wait for the entire website to load before executing any JavaScript code
+window.onload = function () {
+  // Update the status to indicate that the website has finished loading
+  const statusField = document.getElementById('statusField');
+  statusField.textContent = 'Website loaded. Connect your MetaMask wallet.';
 
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
-      if (chainId === '0x61') {
-        console.log('Switched to BSC Testnet');
-        document.getElementById('connectButton').textContent = 'Connected to MetaMask';
-      } else {
-        await switchToBscTestnet();
+  // Connect to MetaMask on button click
+  async function connectToMetaMask() {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        const userAddress = accounts[0];
+        console.log('Connected to MetaMask. User Address:', userAddress);
+
+        // Update the status field with the connected status and user address
+        statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
+        statusField.style.color = 'white'; // Set the font color to white
+
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+        if (chainId === '0x61') {
+          console.log('Switched to BSC Testnet');
+          document.getElementById('connectButton').textContent = 'Connected to MetaMask';
+        } else {
+          await switchToBscTestnet();
+        }
+      } catch (error) {
+        console.error('Error connecting to MetaMask:', error);
+        showError('Error connecting to MetaMask. ' + getErrorMessage(error));
       }
-    } catch (error) {
-      console.error('Error connecting to MetaMask:', error);
-      showError('Error connecting to MetaMask. ' + getErrorMessage(error));
+    } else {
+      console.error('MetaMask is not available. Please install MetaMask.');
+      showError('MetaMask is not available. Please install MetaMask.');
     }
-  } else {
-    console.error('MetaMask is not available. Please install MetaMask.');
-    showError('MetaMask is not available. Please install MetaMask.');
   }
-}
 
-// Function to get a concise human-readable error message
-function getErrorMessage(error) {
-  if (error.code === 4001) {
-    return 'User rejected the connection request.';
+  // Function to get a concise human-readable error message
+  function getErrorMessage(error) {
+    if (error.code === 4001) {
+      return 'User rejected the connection request.';
+    }
+    return 'An unknown error occurred. Please try again.';
   }
-  return 'An unknown error occurred. Please try again.';
-}
+};
+
 </script>
 
 <script async>
