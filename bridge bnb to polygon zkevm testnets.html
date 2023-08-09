@@ -9,7 +9,6 @@
 <!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
 <button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="toggleConnection()" disabled>Connect to MetaMask</button>
 
-
 <!-- Add the Approve Spend button with inline CSS styles -->
 <button id="approveButton" style="background-color: white; font-size: 30px; color: black;" onclick="approveSpend()">Approve Spend</button>
 <!-- Add the New Button to Call "sendFrom" function -->
@@ -47,7 +46,6 @@ window.addEventListener('load', async function () {
         const userAddress = accounts[0];
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
-        connectButton.textContent = 'Connected to MetaMask';
         connectButton.style.color = 'grey'; // Set the font color to grey
         connectButton.disabled = true; // Disable the button
       } else {
@@ -63,7 +61,7 @@ window.addEventListener('load', async function () {
     statusField.style.color = 'white'; // Set the font color to white
   }
 });
-	
+
 async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
     try {
@@ -79,8 +77,6 @@ async function toggleConnection() {
         const statusField = document.getElementById('statusField');
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
-
-        document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
       } else {
         // Handle scenario when button is clicked while already connected
         console.log('Already connected to MetaMask.');
@@ -95,6 +91,7 @@ async function toggleConnection() {
   }
 }
 </script>
+
 
 
 <script async>
