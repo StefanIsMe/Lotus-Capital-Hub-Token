@@ -119,6 +119,7 @@ async function toggleConnection() {
 
 async function switchToBscTestnet() {
   try {
+	  connectButton.disabled = true; // Disable the button
     await ethereum.request({
       method: 'wallet_addEthereumChain',
       params: [
