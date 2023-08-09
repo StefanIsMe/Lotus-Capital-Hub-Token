@@ -15,7 +15,7 @@
 <button id="sendFromButton" style="background-color: white; font-size: 30px; color: black;" onclick="sendFrom()">Call sendFrom function</button>
 
 
-<script>
+<script async>
 // Function to get a concise human-readable error message
 function getErrorMessage(error) {
   if (error.code === 4001) {
@@ -68,8 +68,8 @@ async function toggleConnection() {
 
       if (accounts.length === 0) {
         // Connect to MetaMask
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        const userAddress = accounts[0];
+        const newAccounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        const userAddress = newAccounts[0];
         console.log('Connected to MetaMask. User Address:', userAddress);
 
         // Update the status field with the connected status and user address
@@ -80,7 +80,7 @@ async function toggleConnection() {
         document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
       } else {
         // Disconnect from MetaMask
-        await ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: {} }] });
+        await ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: [] }] });
 
         // Update the status field and UI to reflect disconnection
         const statusField = document.getElementById('statusField');
