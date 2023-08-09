@@ -61,11 +61,11 @@ window.addEventListener('load', async function () {
   }
 });
 
-// Connect to MetaMask or disconnect if already connected
 async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
     try {
       const accounts = await ethereum.request({ method: 'eth_accounts' });
+
       if (accounts.length === 0) {
         // Connect to MetaMask
         const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
