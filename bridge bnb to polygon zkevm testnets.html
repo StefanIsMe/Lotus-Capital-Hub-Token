@@ -41,8 +41,8 @@ async function toggleConnection() {
           await switchToBscTestnet();
         }
       } else {
-        // Disconnect from MetaMask
-        await ethereum.request({ method: 'eth_logout' });
+        // Disconnect from MetaMask (clear selected address)
+        ethereum.selectedAddress = null;
 
         // Update the status field and UI to reflect disconnection
         const statusField = document.getElementById('statusField');
