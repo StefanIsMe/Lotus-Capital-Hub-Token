@@ -2,13 +2,12 @@
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
 
 <!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
-<button id="connectButton" style="background-color: white; font-size: 30px; color: black;" onclick="connectToMetaMask()">Connect to MetaMask</button>
+<button id="connectButton" style="background-color: white; font-size: 30px; color: black;" onclick="connectToMetaMask()" disabled>Connect to MetaMask</button>
 
 <!-- Add a status field to display connection status and errors -->
 <div style="margin-top: 10px;">
   <p id="statusField" style="font-size: 16px; color: white;">Loading...</p>
 </div>
-
 
 <!-- Add the Approve Spend button with inline CSS styles -->
 <button id="approveButton" style="background-color: white; font-size: 30px; color: black;" onclick="approveSpend()">Approve Spend</button>
@@ -19,9 +18,14 @@
 <script>
 // Wait for the entire website to load before executing any JavaScript code
 window.onload = function () {
+  // Enable the Connect to MetaMask button now that the website has finished loading
+  const connectButton = document.getElementById('connectButton');
+  connectButton.removeAttribute('disabled');
+
   // Update the status to indicate that the website has finished loading
   const statusField = document.getElementById('statusField');
   statusField.textContent = 'Website loaded. Connect your MetaMask wallet.';
+  statusField.style.color = 'white'; // Set the font color to white
 
   // Connect to MetaMask on button click
   async function connectToMetaMask() {
@@ -38,7 +42,7 @@ window.onload = function () {
         const chainId = await ethereum.request({ method: 'eth_chainId' });
         if (chainId === '0x61') {
           console.log('Switched to BSC Testnet');
-          document.getElementById('connectButton').textContent = 'Connected to MetaMask';
+          connectButton.textContent = 'Connected to MetaMask';
         } else {
           await switchToBscTestnet();
         }
@@ -60,11 +64,9 @@ window.onload = function () {
     return 'An unknown error occurred. Please try again.';
   }
 };
-
 </script>
 
 <script async>
-
   async function switchToBscTestnet() {
     try {
       await ethereum.request({
