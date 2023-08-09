@@ -18,6 +18,51 @@
 
 
 <script>
+// Function to get a concise human-readable error message
+function getErrorMessage(error) {
+  if (error.code === 4001) {
+    return 'User rejected the connection request.';
+  }
+  return 'An unknown error occurred. Please try again.';
+}
+
+// Wait for the entire website to load before enabling the button and checking connection
+window.addEventListener('load', async function () {
+  const connectButton = document.getElementById('connectButton');
+  const statusField = document.getElementById('statusField');
+
+  // Enable the Connect to MetaMask button now that the website has finished loading
+  connectButton.removeAttribute('disabled');
+  connectButton.style.color = 'black'; // Set font color to black when enabled
+
+  // Update the status to indicate that the website has finished loading
+  statusField.textContent = 'Website loaded. Connect your MetaMask wallet.';
+  statusField.style.color = 'white'; // Set the font color to white
+
+  // Check MetaMask connection status
+  if (typeof window.ethereum !== 'undefined') {
+    try {
+      const accounts = await ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length > 0) {
+        // User is already connected
+        const userAddress = accounts[0];
+        statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
+        statusField.style.color = 'white'; // Set the font color to white
+        connectButton.textContent = 'Disconnect from MetaMask';
+      } else {
+        // User is not connected
+        statusField.textContent = 'Not connected to MetaMask';
+        statusField.style.color = 'white'; // Set the font color to white
+      }
+    } catch (error) {
+      console.error('Error checking MetaMask connection:', error);
+    }
+  } else {
+    statusField.textContent = 'MetaMask is not available. Please install MetaMask.';
+    statusField.style.color = 'white'; // Set the font color to white
+  }
+});
+
 // Connect to MetaMask or disconnect if already connected
 async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
@@ -33,13 +78,7 @@ async function toggleConnection() {
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
 
-        const chainId = await ethereum.request({ method: 'eth_chainId' });
-        if (chainId === '0x61') {
-          console.log('Switched to BSC Testnet');
-          document.getElementById('connectButton').textContent = 'Connected to MetaMask';
-        } else {
-          await switchToBscTestnet();
-        }
+        document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
       } else {
         // Disconnect from MetaMask (clear selected address)
         ethereum.selectedAddress = null;
@@ -60,26 +99,6 @@ async function toggleConnection() {
     showError('MetaMask is not available. Please install MetaMask.');
   }
 }
-
-// Function to get a concise human-readable error message
-function getErrorMessage(error) {
-  if (error.code === 4001) {
-    return 'User rejected the connection request.';
-  }
-  return 'An unknown error occurred. Please try again.';
-}
-
-// Wait for the entire website to load before enabling the button
-window.addEventListener('load', function () {
-  const connectButton = document.getElementById('connectButton');
-  connectButton.removeAttribute('disabled');
-  connectButton.style.color = 'black'; // Set font color to black when enabled
-
-  // Update the status to indicate that the website has finished loading
-  const statusField = document.getElementById('statusField');
-  statusField.textContent = 'Website loaded. Connect your MetaMask wallet.';
-  statusField.style.color = 'white'; // Set the font color to white
-});
 </script>
 
 <script async>
