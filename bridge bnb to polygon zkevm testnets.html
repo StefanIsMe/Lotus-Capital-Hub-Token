@@ -15,7 +15,7 @@
 <!-- Add the New Button to Call "sendFrom" function -->
 <button id="sendFromButton" style="background-color: white; font-size: 30px; color: black;" onclick="sendFrom()">Call sendFrom function</button>
 
-<script async>
+<script>
 // Function to get a concise human-readable error message
 function getErrorMessage(error) {
   if (error.code === 4001) {
@@ -108,7 +108,7 @@ async function toggleConnection() {
         const chainId = await ethereum.request({ method: 'eth_chainId' });
         if (chainId !== '0x61') {
           switchingStatus.textContent = 'Switching to BSC Test Net...';
-          connectButton.disabled = true; // Disable the button during network switch
+          document.getElementById('connectButton').disabled = true; // Disable the button during network switch
           await switchToBscTestnet();
           switchingStatus.textContent = ''; // Clear the switching status
 
@@ -166,6 +166,7 @@ async function switchToBscTestnet() {
   }
 }
 </script>
+
 
 <script async>
   async function approveSpend() {
