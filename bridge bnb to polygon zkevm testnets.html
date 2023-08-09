@@ -28,6 +28,7 @@ function getErrorMessage(error) {
 window.addEventListener('load', async function () {
   const connectButton = document.getElementById('connectButton');
   const statusField = document.getElementById('statusField');
+  const switchingStatus = document.getElementById('switchingStatus');
 
   // Enable the Connect to MetaMask button now that the website has finished loading
   connectButton.removeAttribute('disabled');
@@ -103,17 +104,6 @@ async function switchToBscTestnet() {
       return;
     }
 
-   async function switchToBscTestnet() {
-  const switchingStatus = document.getElementById('switchingStatus');
-  const statusField = document.getElementById('statusField');
-  
-  try {
-    const chainId = await ethereum.request({ method: 'eth_chainId' });
-    if (chainId === '0x61') {
-      console.log('Already connected to BSC Testnet');
-      return;
-    }
-
     switchingStatus.textContent = 'Switching to BSC Test Net...';
     await ethereum.request({
       method: 'wallet_addEthereumChain',
@@ -132,19 +122,15 @@ async function switchToBscTestnet() {
       ],
     });
     console.log('Switched to BSC Testnet');
-    switchingStatus.textContent = 'Switched to BSC Test Net'; // Set success message
+    switchingStatus.textContent = ''; // Clear the switching status
   } catch (error) {
     console.error('Error switching to BSC Testnet:', error);
     showError('Error switching to BSC Testnet. ' + getErrorMessage(error));
-  } finally {
-    setTimeout(() => {
-      switchingStatus.textContent = ''; // Clear the switching status after a brief delay
-    }, 2000); // Adjust the delay (in milliseconds) as needed
+    switchingStatus.textContent = ''; // Clear the switching status on error
   }
 }
-
-}
 </script>
+
 
 
 <script async>
