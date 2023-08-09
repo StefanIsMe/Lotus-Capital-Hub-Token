@@ -77,6 +77,9 @@ async function toggleConnection() {
         const statusField = document.getElementById('statusField');
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
+
+        connectButton.style.color = 'grey'; // Set the font color to grey
+        connectButton.disabled = true; // Disable the button
       } else {
         // Handle scenario when button is clicked while already connected
         console.log('Already connected to MetaMask.');
@@ -91,8 +94,6 @@ async function toggleConnection() {
   }
 }
 </script>
-
-
 
 <script async>
   async function switchToBscTestnet() {
