@@ -1,14 +1,14 @@
 <!-- HTML -->
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
 
-
-<!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
-<button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="connectToMetaMask()" disabled>Connect to MetaMask</button>
-
 <!-- Add a status field to display connection status and errors -->
 <div style="margin-top: 10px;">
   <p id="statusField" style="font-size: 16px; color: white;">Loading...</p>
 </div>
+
+<!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
+<button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="connectToMetaMask()" disabled>Connect to MetaMask</button>
+
 
 
 <!-- Add the Approve Spend button with inline CSS styles -->
@@ -18,9 +18,46 @@
 
 
 <script>
-// Wait for the entire website to load before executing any JavaScript code
-window.onload = function () {
-  // Enable the Connect to MetaMask button now that the website has finished loading
+// Connect to MetaMask on button click
+async function connectToMetaMask() {
+  if (typeof window.ethereum !== 'undefined') {
+    try {
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      const userAddress = accounts[0];
+      console.log('Connected to MetaMask. User Address:', userAddress);
+
+      // Update the status field with the connected status and user address
+      const statusField = document.getElementById('statusField');
+      statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
+      statusField.style.color = 'white'; // Set the font color to white
+
+      const chainId = await ethereum.request({ method: 'eth_chainId' });
+      if (chainId === '0x61') {
+        console.log('Switched to BSC Testnet');
+        document.getElementById('connectButton').textContent = 'Connected to MetaMask';
+      } else {
+        await switchToBscTestnet();
+      }
+    } catch (error) {
+      console.error('Error connecting to MetaMask:', error);
+      showError('Error connecting to MetaMask. ' + getErrorMessage(error));
+    }
+  } else {
+    console.error('MetaMask is not available. Please install MetaMask.');
+    showError('MetaMask is not available. Please install MetaMask.');
+  }
+}
+
+// Function to get a concise human-readable error message
+function getErrorMessage(error) {
+  if (error.code === 4001) {
+    return 'User rejected the connection request.';
+  }
+  return 'An unknown error occurred. Please try again.';
+}
+
+// Wait for the entire website to load before enabling the button
+window.addEventListener('load', function () {
   const connectButton = document.getElementById('connectButton');
   connectButton.removeAttribute('disabled');
   connectButton.style.color = 'black'; // Set font color to black when enabled
@@ -29,45 +66,7 @@ window.onload = function () {
   const statusField = document.getElementById('statusField');
   statusField.textContent = 'Website loaded. Connect your MetaMask wallet.';
   statusField.style.color = 'white'; // Set the font color to white
-
-  // Connect to MetaMask on button click
-  async function connectToMetaMask() {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        const userAddress = accounts[0];
-        console.log('Connected to MetaMask. User Address:', userAddress);
-
-        // Update the status field with the connected status and user address
-        statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
-        statusField.style.color = 'white'; // Set the font color to white
-
-        const chainId = await ethereum.request({ method: 'eth_chainId' });
-        if (chainId === '0x61') {
-          console.log('Switched to BSC Testnet');
-          connectButton.textContent = 'Connected to MetaMask';
-        } else {
-          await switchToBscTestnet();
-        }
-      } catch (error) {
-        console.error('Error connecting to MetaMask:', error);
-        showError('Error connecting to MetaMask. ' + getErrorMessage(error));
-      }
-    } else {
-      console.error('MetaMask is not available. Please install MetaMask.');
-      showError('MetaMask is not available. Please install MetaMask.');
-    }
-  }
-
-  // Function to get a concise human-readable error message
-  function getErrorMessage(error) {
-    if (error.code === 4001) {
-      return 'User rejected the connection request.';
-    }
-    return 'An unknown error occurred. Please try again.';
-  }
-};
-
+});
 </script>
 
 <script async>
