@@ -62,7 +62,7 @@ window.addEventListener('load', async function () {
     statusField.style.color = 'white'; // Set the font color to white
   }
 });
-	
+
 async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
     try {
@@ -97,6 +97,23 @@ async function toggleConnection() {
 async function switchToBscTestnet() {
   const switchingStatus = document.getElementById('switchingStatus');
   try {
+    const chainId = await ethereum.request({ method: 'eth_chainId' });
+    if (chainId === '0x61') {
+      console.log('Already connected to BSC Testnet');
+      return;
+    }
+
+   async function switchToBscTestnet() {
+  const switchingStatus = document.getElementById('switchingStatus');
+  const statusField = document.getElementById('statusField');
+  
+  try {
+    const chainId = await ethereum.request({ method: 'eth_chainId' });
+    if (chainId === '0x61') {
+      console.log('Already connected to BSC Testnet');
+      return;
+    }
+
     switchingStatus.textContent = 'Switching to BSC Test Net...';
     await ethereum.request({
       method: 'wallet_addEthereumChain',
@@ -115,14 +132,20 @@ async function switchToBscTestnet() {
       ],
     });
     console.log('Switched to BSC Testnet');
-    switchingStatus.textContent = ''; // Clear the switching status
+    switchingStatus.textContent = 'Switched to BSC Test Net'; // Set success message
   } catch (error) {
     console.error('Error switching to BSC Testnet:', error);
     showError('Error switching to BSC Testnet. ' + getErrorMessage(error));
-    switchingStatus.textContent = ''; // Clear the switching status on error
+  } finally {
+    setTimeout(() => {
+      switchingStatus.textContent = ''; // Clear the switching status after a brief delay
+    }, 2000); // Adjust the delay (in milliseconds) as needed
   }
 }
+
+}
 </script>
+
 
 <script async>
   async function approveSpend() {
