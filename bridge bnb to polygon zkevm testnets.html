@@ -9,13 +9,14 @@
 <!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
 <button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="toggleConnection()" disabled>Connect to MetaMask</button>
 
+
 <!-- Add the Approve Spend button with inline CSS styles -->
 <button id="approveButton" style="background-color: white; font-size: 30px; color: black;" onclick="approveSpend()">Approve Spend</button>
 <!-- Add the New Button to Call "sendFrom" function -->
 <button id="sendFromButton" style="background-color: white; font-size: 30px; color: black;" onclick="sendFrom()">Call sendFrom function</button>
 
 
-<script async>
+<script>
 // Function to get a concise human-readable error message
 function getErrorMessage(error) {
   if (error.code === 4001) {
@@ -46,7 +47,7 @@ window.addEventListener('load', async function () {
         const userAddress = accounts[0];
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
-        connectButton.textContent = 'Disconnect from MetaMask';
+        connectButton.textContent = 'Connected to MetaMask';
       } else {
         // User is not connected
         statusField.textContent = 'Not connected to MetaMask';
@@ -68,8 +69,8 @@ async function toggleConnection() {
 
       if (accounts.length === 0) {
         // Connect to MetaMask
-        const newAccounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        const userAddress = newAccounts[0];
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        const userAddress = accounts[0];
         console.log('Connected to MetaMask. User Address:', userAddress);
 
         // Update the status field with the connected status and user address
@@ -79,15 +80,8 @@ async function toggleConnection() {
 
         document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
       } else {
-        // Disconnect from MetaMask
-        await ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: [] }] });
-
-        // Update the status field and UI to reflect disconnection
-        const statusField = document.getElementById('statusField');
-        statusField.textContent = 'Not connected to MetaMask';
-        statusField.style.color = 'white'; // Set the font color to white
-
-        document.getElementById('connectButton').textContent = 'Connect to MetaMask';
+        // Handle scenario when button is clicked while already connected
+        console.log('Already connected to MetaMask.');
       }
     } catch (error) {
       console.error('Error connecting to MetaMask:', error);
@@ -99,6 +93,7 @@ async function toggleConnection() {
   }
 }
 </script>
+
 
 <script async>
   async function switchToBscTestnet() {
