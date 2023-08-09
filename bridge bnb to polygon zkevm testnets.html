@@ -1,6 +1,7 @@
 <!-- HTML -->
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
 
+
 <!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
 <button id="connectButton" style="background-color: white; font-size: 30px; color: black;" onclick="connectToMetaMask()" disabled>Connect to MetaMask</button>
 
@@ -21,6 +22,7 @@ window.onload = function () {
   // Enable the Connect to MetaMask button now that the website has finished loading
   const connectButton = document.getElementById('connectButton');
   connectButton.removeAttribute('disabled');
+  connectButton.style.color = 'black'; // Set font color to black when enabled
 
   // Update the status to indicate that the website has finished loading
   const statusField = document.getElementById('statusField');
@@ -64,6 +66,7 @@ window.onload = function () {
     return 'An unknown error occurred. Please try again.';
   }
 };
+
 </script>
 
 <script async>
