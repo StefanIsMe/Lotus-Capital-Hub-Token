@@ -3,6 +3,13 @@
 
 <!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
 <button id="connectButton" style="background-color: white; font-size: 30px; color: black;" onclick="connectToMetaMask()">Connect to MetaMask</button>
+
+<!-- Add a locked text field to display the connected MetaMask wallet address -->
+<div style="margin-top: 10px;">
+  <label for="connectedAddress" style="font-size: 16px;">Connected Wallet Address:</label>
+  <input type="text" id="connectedAddress" style="width: 100%; font-size: 14px;" readonly>
+</div>
+
 <!-- Add the Approve Spend button with inline CSS styles -->
 <button id="approveButton" style="background-color: white; font-size: 30px; color: black;" onclick="approveSpend()">Approve Spend</button>
 <!-- Add the New Button to Call "sendFrom" function -->
@@ -10,33 +17,33 @@
 
 
 <script>
-  async function connectToMetaMask() {
-    // Check if MetaMask is available
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        // Request access to the user's accounts
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        const userAddress = accounts[0];
-        console.log('Connected to MetaMask. User Address:', userAddress);
+async function connectToMetaMask() {
+  if (typeof window.ethereum !== 'undefined') {
+    try {
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      const userAddress = accounts[0];
+      console.log('Connected to MetaMask. User Address:', userAddress);
+      
+      // Update the locked text field with the connected wallet address
+      document.getElementById('connectedAddress').value = userAddress;
 
-        // Check the chain ID to ensure it's the BSC Testnet (97)
-        const chainId = await ethereum.request({ method: 'eth_chainId' });
-        if (chainId === '0x61') {
-          console.log('Already connected to BSC Testnet');
-          document.getElementById('connectButton').textContent = 'Connected to MetaMask';
-        } else {
-          // Switch to BSC Testnet
-          await switchToBscTestnet();
-        }
-      } catch (error) {
-        console.error('Error connecting to MetaMask:', error);
-        showError('Error connecting to MetaMask. Please try again.');
+      const chainId = await ethereum.request({ method: 'eth_chainId' });
+      if (chainId === '0x61') {
+        console.log('Switched to BSC Testnet');
+        document.getElementById('connectButton').textContent = 'Connected to MetaMask';
+      } else {
+        await switchToBscTestnet();
       }
-    } else {
-      console.error('MetaMask is not available. Please install MetaMask.');
-      showError('MetaMask is not available. Please install MetaMask.');
+    } catch (error) {
+      console.error('Error connecting to MetaMask:', error);
+      showError('Error connecting to MetaMask. Please try again.');
     }
+  } else {
+    console.error('MetaMask is not available. Please install MetaMask.');
+    showError('MetaMask is not available. Please install MetaMask.');
   }
+}
+
 </script>
 
 <script async>
