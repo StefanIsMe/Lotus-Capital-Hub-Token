@@ -80,7 +80,14 @@ async function toggleConnection() {
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
 
-        document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+        if (chainId === '0x61') {
+          connectButton.textContent = 'Connected to MetaMask';
+          connectButton.style.color = 'grey'; // Set the font color to grey
+          connectButton.disabled = true; // Disable the button
+        } else {
+          switchToBscTestnet();
+        }
       } else {
         // Handle scenario when button is clicked while already connected
         console.log('Already connected to MetaMask.');
@@ -98,12 +105,6 @@ async function toggleConnection() {
 async function switchToBscTestnet() {
   const switchingStatus = document.getElementById('switchingStatus');
   try {
-    const chainId = await ethereum.request({ method: 'eth_chainId' });
-    if (chainId === '0x61') {
-      console.log('Already connected to BSC Testnet');
-      return;
-    }
-
     switchingStatus.textContent = 'Switching to BSC Test Net...';
     await ethereum.request({
       method: 'wallet_addEthereumChain',
@@ -130,9 +131,6 @@ async function switchToBscTestnet() {
   }
 }
 </script>
-
-
-
 <script async>
   async function approveSpend() {
     try {
