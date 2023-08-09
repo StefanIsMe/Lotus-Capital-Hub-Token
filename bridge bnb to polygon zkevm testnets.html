@@ -4,6 +4,7 @@
 <!-- Add a status field to display connection status and errors -->
 <div style="margin-top: 10px;">
   <p id="statusField" style="font-size: 16px; color: white;">Loading...</p>
+  <p id="switchingStatus" style="font-size: 16px; color: white;"></p>
 </div>
 
 <!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
@@ -13,7 +14,6 @@
 <button id="approveButton" style="background-color: white; font-size: 30px; color: black;" onclick="approveSpend()">Approve Spend</button>
 <!-- Add the New Button to Call "sendFrom" function -->
 <button id="sendFromButton" style="background-color: white; font-size: 30px; color: black;" onclick="sendFrom()">Call sendFrom function</button>
-
 
 <script>
 // Function to get a concise human-readable error message
@@ -46,13 +46,9 @@ window.addEventListener('load', async function () {
         const userAddress = accounts[0];
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
+        connectButton.textContent = 'Connected to MetaMask';
         connectButton.style.color = 'grey'; // Set the font color to grey
         connectButton.disabled = true; // Disable the button
-
-        const chainId = await ethereum.request({ method: 'eth_chainId' });
-        if (chainId !== '0x61') {
-          await switchToBscTestnet();
-        }
       } else {
         // User is not connected
         statusField.textContent = 'Not connected to MetaMask';
@@ -66,7 +62,7 @@ window.addEventListener('load', async function () {
     statusField.style.color = 'white'; // Set the font color to white
   }
 });
-
+	
 async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
     try {
@@ -83,13 +79,7 @@ async function toggleConnection() {
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
 
-        connectButton.style.color = 'grey'; // Set the font color to grey
-        connectButton.disabled = true; // Disable the button
-
-        const chainId = await ethereum.request({ method: 'eth_chainId' });
-        if (chainId !== '0x61') {
-          await switchToBscTestnet();
-        }
+        document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
       } else {
         // Handle scenario when button is clicked while already connected
         console.log('Already connected to MetaMask.');
@@ -103,35 +93,37 @@ async function toggleConnection() {
     showError('MetaMask is not available. Please install MetaMask.');
   }
 }
+
+async function switchToBscTestnet() {
+  const switchingStatus = document.getElementById('switchingStatus');
+  try {
+    switchingStatus.textContent = 'Switching to BSC Test Net...';
+    await ethereum.request({
+      method: 'wallet_addEthereumChain',
+      params: [
+        {
+          chainId: '0x61', // BSC Testnet chain ID (97 in decimal)
+          chainName: 'BSC Testnet',
+          nativeCurrency: {
+            name: 'tBNB',
+            symbol: 'tBNB',
+            decimals: 18,
+          },
+          rpcUrls: ['https://bsc-testnet.publicnode.com'],
+          blockExplorerUrls: ['https://testnet.bscscan.com'],
+        },
+      ],
+    });
+    console.log('Switched to BSC Testnet');
+    switchingStatus.textContent = ''; // Clear the switching status
+  } catch (error) {
+    console.error('Error switching to BSC Testnet:', error);
+    showError('Error switching to BSC Testnet. ' + getErrorMessage(error));
+    switchingStatus.textContent = ''; // Clear the switching status on error
+  }
+}
 </script>
 
-<script async>
-  async function switchToBscTestnet() {
-    try {
-      await ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [
-          {
-            chainId: '0x61', // BSC Testnet chain ID (97 in decimal)
-            chainName: 'BSC Testnet',
-            nativeCurrency: {
-              name: 'tBNB',
-              symbol: 'tBNB',
-              decimals: 18,
-            },
-            rpcUrls: ['https://bsc-testnet.publicnode.com'],
-            blockExplorerUrls: ['https://testnet.bscscan.com'],
-          },
-        ],
-      });
-      console.log('Switched to BSC Testnet');
-      document.getElementById('connectButton').textContent = 'Connected to MetaMask';
-    } catch (error) {
-      console.error('Error switching to BSC Testnet:', error);
-      showError('Error switching to BSC Testnet. Please try again.');
-    }
-  }
-</script>
 <script async>
   async function approveSpend() {
     try {
