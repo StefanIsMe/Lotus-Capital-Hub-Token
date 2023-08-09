@@ -4,11 +4,11 @@
 <!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
 <button id="connectButton" style="background-color: white; font-size: 30px; color: black;" onclick="connectToMetaMask()">Connect to MetaMask</button>
 
-<!-- Add a locked text field to display the connected MetaMask wallet address -->
+<!-- Add a status field to display connection status and errors -->
 <div style="margin-top: 10px;">
-  <label for="connectedAddress" style="font-size: 16px;">Connected Wallet Address:</label>
-  <input type="text" id="connectedAddress" style="width: 100%; font-size: 14px;" readonly>
+  <p id="statusField" style="font-size: 16px; color: black;">Not connected to MetaMask</p>
 </div>
+
 
 <!-- Add the Approve Spend button with inline CSS styles -->
 <button id="approveButton" style="background-color: white; font-size: 30px; color: black;" onclick="approveSpend()">Approve Spend</button>
@@ -24,8 +24,9 @@ async function connectToMetaMask() {
       const userAddress = accounts[0];
       console.log('Connected to MetaMask. User Address:', userAddress);
       
-      // Update the locked text field with the connected wallet address
-      document.getElementById('connectedAddress').value = userAddress;
+      // Update the status field with the connected status and user address
+      const statusField = document.getElementById('statusField');
+      statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
 
       const chainId = await ethereum.request({ method: 'eth_chainId' });
       if (chainId === '0x61') {
@@ -36,7 +37,7 @@ async function connectToMetaMask() {
       }
     } catch (error) {
       console.error('Error connecting to MetaMask:', error);
-      showError('Error connecting to MetaMask. Please try again.');
+      showError('Error connecting to MetaMask. ' + getErrorMessage(error));
     }
   } else {
     console.error('MetaMask is not available. Please install MetaMask.');
@@ -44,6 +45,13 @@ async function connectToMetaMask() {
   }
 }
 
+// Function to get a concise human-readable error message
+function getErrorMessage(error) {
+  if (error.code === 4001) {
+    return 'User rejected the connection request.';
+  }
+  return 'An unknown error occurred. Please try again.';
+}
 </script>
 
 <script async>
