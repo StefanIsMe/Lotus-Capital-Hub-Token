@@ -48,6 +48,8 @@ window.addEventListener('load', async function () {
         statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
         statusField.style.color = 'white'; // Set the font color to white
         connectButton.textContent = 'Connected to MetaMask';
+        connectButton.style.color = 'grey'; // Set the font color to grey
+        connectButton.disabled = true; // Disable the button
       } else {
         // User is not connected
         statusField.textContent = 'Not connected to MetaMask';
@@ -61,7 +63,7 @@ window.addEventListener('load', async function () {
     statusField.style.color = 'white'; // Set the font color to white
   }
 });
-
+	
 async function toggleConnection() {
   if (typeof window.ethereum !== 'undefined') {
     try {
