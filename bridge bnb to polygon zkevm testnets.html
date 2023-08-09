@@ -32,10 +32,6 @@ window.addEventListener('load', async function () {
 
   // Check MetaMask connection status
   if (typeof window.ethereum !== 'undefined') {
-    // Enable the Connect to MetaMask button now that the website has finished loading
-    connectButton.removeAttribute('disabled');
-    connectButton.style.color = 'black'; // Set font color to black when enabled
-
     try {
       const accounts = await ethereum.request({ method: 'eth_accounts' });
       if (accounts.length > 0) {
@@ -58,12 +54,11 @@ window.addEventListener('load', async function () {
           // Refresh the connection status after switching
           const newChainId = await ethereum.request({ method: 'eth_chainId' });
           if (newChainId === '0x61') {
-		  connectButton.disabled = true; // Disable the button
             statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
             statusField.style.color = 'white'; // Set the font color to white
             connectButton.textContent = 'Connected to MetaMask';
             connectButton.style.color = 'grey'; // Set the font color to grey
-            
+            connectButton.disabled = true; // Disable the button
           } else {
             statusField.textContent = 'Connected to MetaMask, but to the wrong network.';
             statusField.style.color = 'white'; // Set the font color to white
@@ -77,6 +72,10 @@ window.addEventListener('load', async function () {
         statusField.textContent = 'Not connected to MetaMask';
         statusField.style.color = 'white'; // Set the font color to white
       }
+      
+      // Enable the Connect to MetaMask button now that the website has finished loading
+      connectButton.removeAttribute('disabled');
+      connectButton.style.color = 'black'; // Set font color to black when enabled
     } catch (error) {
       console.error('Error checking MetaMask connection:', error);
     }
@@ -105,7 +104,31 @@ async function toggleConnection() {
         document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
       } else {
         // Handle scenario when button is clicked while already connected
-        console.log('Already connected to MetaMask.');
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+        if (chainId !== '0x61') {
+          switchingStatus.textContent = 'Switching to BSC Test Net...';
+          connectButton.disabled = true; // Disable the button during network switch
+          await switchToBscTestnet();
+          switchingStatus.textContent = ''; // Clear the switching status
+
+          // Refresh the connection status after switching
+          const newChainId = await ethereum.request({ method: 'eth_chainId' });
+          if (newChainId === '0x61') {
+            statusField.textContent = 'Connected to MetaMask. User Address: ' + userAddress;
+            statusField.style.color = 'white'; // Set the font color to white
+            connectButton.textContent = 'Connected to MetaMask';
+            connectButton.style.color = 'grey'; // Set the font color to grey
+            connectButton.disabled = true; // Disable the button
+          } else {
+            statusField.textContent = 'Connected to MetaMask, but to the wrong network.';
+            statusField.style.color = 'white'; // Set the font color to white
+            connectButton.textContent = 'Connect to MetaMask';
+            connectButton.style.color = 'black'; // Set the font color to black
+            connectButton.disabled = false; // Enable the button
+          }
+        } else {
+          console.log('Already connected to MetaMask.');
+        }
       }
     } catch (error) {
       console.error('Error connecting to MetaMask:', error);
@@ -119,7 +142,6 @@ async function toggleConnection() {
 
 async function switchToBscTestnet() {
   try {
-	  connectButton.disabled = true; // Disable the button
     await ethereum.request({
       method: 'wallet_addEthereumChain',
       params: [
@@ -143,6 +165,7 @@ async function switchToBscTestnet() {
   }
 }
 </script>
+
 
 <script async>
   async function approveSpend() {
