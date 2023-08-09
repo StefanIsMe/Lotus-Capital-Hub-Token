@@ -48,6 +48,11 @@ window.addEventListener('load', async function () {
         statusField.style.color = 'white'; // Set the font color to white
         connectButton.style.color = 'grey'; // Set the font color to grey
         connectButton.disabled = true; // Disable the button
+
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+        if (chainId !== '0x61') {
+          await switchToBscTestnet();
+        }
       } else {
         // User is not connected
         statusField.textContent = 'Not connected to MetaMask';
@@ -80,6 +85,11 @@ async function toggleConnection() {
 
         connectButton.style.color = 'grey'; // Set the font color to grey
         connectButton.disabled = true; // Disable the button
+
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+        if (chainId !== '0x61') {
+          await switchToBscTestnet();
+        }
       } else {
         // Handle scenario when button is clicked while already connected
         console.log('Already connected to MetaMask.');
