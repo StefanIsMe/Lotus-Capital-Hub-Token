@@ -72,13 +72,13 @@ window.addEventListener('load', async function () {
         statusField.textContent = 'Not connected to MetaMask';
         statusField.style.color = 'white'; // Set the font color to white
       }
-      
-      // Enable the Connect to MetaMask button now that the website has finished loading
-      connectButton.removeAttribute('disabled');
-      connectButton.style.color = 'black'; // Set font color to black when enabled
     } catch (error) {
       console.error('Error checking MetaMask connection:', error);
     }
+    
+    // Enable the Connect to MetaMask button now that the website has finished loading
+    connectButton.removeAttribute('disabled');
+    connectButton.style.color = 'black'; // Set font color to black when enabled
   } else {
     statusField.textContent = 'MetaMask is not available. Please install MetaMask.';
     statusField.style.color = 'white'; // Set the font color to white
@@ -102,6 +102,7 @@ async function toggleConnection() {
         statusField.style.color = 'white'; // Set the font color to white
 
         document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
+        document.getElementById('connectButton').disabled = true; // Disable the button
       } else {
         // Handle scenario when button is clicked while already connected
         const chainId = await ethereum.request({ method: 'eth_chainId' });
@@ -165,7 +166,6 @@ async function switchToBscTestnet() {
   }
 }
 </script>
-
 
 <script async>
   async function approveSpend() {
