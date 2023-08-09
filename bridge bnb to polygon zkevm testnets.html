@@ -11,17 +11,21 @@
 
 <script>
   async function connectToMetaMask() {
+    // Check if MetaMask is available
     if (typeof window.ethereum !== 'undefined') {
       try {
+        // Request access to the user's accounts
         const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
         const userAddress = accounts[0];
         console.log('Connected to MetaMask. User Address:', userAddress);
 
+        // Check the chain ID to ensure it's the BSC Testnet (97)
         const chainId = await ethereum.request({ method: 'eth_chainId' });
         if (chainId === '0x61') {
-          console.log('Switched to BSC Testnet');
+          console.log('Already connected to BSC Testnet');
           document.getElementById('connectButton').textContent = 'Connected to MetaMask';
         } else {
+          // Switch to BSC Testnet
           await switchToBscTestnet();
         }
       } catch (error) {
@@ -33,8 +37,8 @@
       showError('MetaMask is not available. Please install MetaMask.');
     }
   }
-
 </script>
+
 <script async>
 
   async function switchToBscTestnet() {
