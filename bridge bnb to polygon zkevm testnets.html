@@ -1,177 +1,211 @@
 <!-- HTML -->
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
-
-<!-- Add a status field to display connection status and errors -->
 <div style="margin-top: 10px;">
-  <p id="statusField" style="font-size: 16px; color: white;">Loading...</p>
-  <p id="switchingStatus" style="font-size: 16px; color: white;"></p>
+    <!-- Connection Status -->
+    <p id="statusField" style="font-size: 16px; color: white;">Connecting to MetaMask...</p>
+    <p id="switchingStatus" style="font-size: 16px; color: white;"></p>
 </div>
 
-<!-- Add the Connect to MetaMask button with inline CSS styles and initial text -->
-<button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="toggleConnection()" disabled>Connect to MetaMask</button>
+<div style="margin-top: 20px;">
+    <!-- Step 1: Connect to MetaMask -->
+    <h2>Step 1: Connect to MetaMask</h2>
+    <p>Click the button below to connect your MetaMask wallet.</p>
+    <button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="toggleConnection()" disabled>Connect to MetaMask</button>
+</div>
 
-<!-- Add the Approve Spend button with inline CSS styles -->
-<button id="approveButton" style="background-color: white; font-size: 30px; color: black;" onclick="approveSpend()">Approve Spend</button>
-<!-- Add the New Button to Call "sendFrom" function -->
-<button id="sendFromButton" style="background-color: white; font-size: 30px; color: black;" onclick="sendFrom()">Call sendFrom function</button>
+<div style="margin-top: 20px;">
+    <!-- Step 2: Approve Spend -->
+    <h2>Step 2: Approve Spend</h2>
+    <p>After connecting, you'll need to approve the spend.</p>
+    <button id="approveButton" style="background-color: white; font-size: 30px; color: grey;" onclick="approveSpend()" disabled>Approve Spend</button>
+</div>
+
+<div style="margin-top: 20px;">
+    <!-- Step 3: Complete SendFrom -->
+    <h2>Step 3: Complete SendFrom</h2>
+    <p>Once approved, complete the sendFrom action.</p>
+    <button id="sendFromButton" style="background-color: white; font-size: 30px; color: grey;" onclick="sendFrom()" disabled>Complete sendFrom</button>
+</div>
 
 <script>
-	// Function to get a concise human-readable error message
-	function getErrorMessage(error) {
-	  if (error.code === 4001) {
-		return 'User rejected the connection request.';
-	  }
-	  return 'An unknown error occurred. Please try again.';
-	}
-	
-	// Wait for the entire website to load before enabling the button and checking connection
-	window.addEventListener('load', async function () {
-	  const connectButton = document.getElementById('connectButton');
-	  const statusField = document.getElementById('statusField');
-	  const switchingStatus = document.getElementById('switchingStatus');
-	
-	  // Enable the Connect to MetaMask button now that the website has finished loading
-	  connectButton.removeAttribute('disabled');
-	  connectButton.style.color = 'black'; // Set font color to black when enabled
-	
-	  // Check MetaMask connection status
-	  if (typeof window.ethereum !== 'undefined') {
-		try {
-		  const accounts = await ethereum.request({ method: 'eth_accounts' });
-		  if (accounts.length > 0) {
-			const userAddress = accounts[0];
-			const chainId = await ethereum.request({ method: 'eth_chainId' });
-	
-			if (chainId === '0x61') {
-			  updateStatus('Connected to MetaMask. User Address: ' + userAddress, 'grey', true);
-			} else {
-			  updateStatus('Connected to MetaMask. User Address: ' + userAddress, 'grey', true);
-			  await switchToBscTestnet();
-			}
-		  } else {
-			updateStatus('Not connected to MetaMask', 'white');
-		  }
-		} catch (error) {
-		  console.error('Error checking MetaMask connection:', error);
-		  showError(getErrorMessage(error));
-		}
-	  } else {
-		showError('MetaMask is not available. Please install MetaMask.');
-	  }
-	});
-	
-	async function toggleConnection() {
-	  if (typeof window.ethereum !== 'undefined') {
-		try {
-		  const accounts = await ethereum.request({ method: 'eth_accounts' });
-	
-		  if (accounts.length === 0) {
-			// Connect to MetaMask
-			const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-			const userAddress = accounts[0];
-			console.log('Connected to MetaMask. User Address:', userAddress);
-	
-			updateStatus('Connected to MetaMask. User Address: ' + userAddress, 'grey', true);
-			document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
-			document.getElementById('connectButton').disabled = true; // Disable the button
-		  } else {
-			const chainId = await ethereum.request({ method: 'eth_chainId' });
-			if (chainId !== '0x61') {
-			  await switchToBscTestnet();
-			} else {
-			  console.log('Already connected to MetaMask.');
-			}
-		  }
-		} catch (error) {
-		  console.error('Error connecting to MetaMask:', error);
-		  showError(getErrorMessage(error));
-		}
-	  } else {
-		showError('MetaMask is not available. Please install MetaMask.');
-	  }
-	}
-	
-	async function switchToBscTestnet() {
-	  const connectButton = document.getElementById('connectButton');
-	  const approveButton = document.getElementById('approveButton');
-	  const sendFromButton = document.getElementById('sendFromButton');
-	  const statusField = document.getElementById('statusField');
-	  const switchingStatus = document.getElementById('switchingStatus');
-	
-	  try {
-		// Disable buttons during network switch attempt
-		connectButton.disabled = true;
-		approveButton.disabled = true;
-		sendFromButton.disabled = true;
-		connectButton.style.color = 'grey';
-		approveButton.style.color = 'grey';
-		sendFromButton.style.color = 'grey';
-		console.log('Buttons disabled during network switch attempt.');
-	
-		updateStatus('Switching to BSC Test Net...', 'white');
-		await ethereum.request({
-		  method: 'wallet_addEthereumChain',
-		  params: [
-			{
-			  chainId: '0x61', // BSC Testnet chain ID (97 in decimal)
-			  chainName: 'BSC Testnet',
-			  nativeCurrency: {
-				name: 'tBNB',
-				symbol: 'tBNB',
-				decimals: 18,
-			  },
-			  rpcUrls: ['https://bsc-testnet.publicnode.com'],
-			  blockExplorerUrls: ['https://testnet.bscscan.com'],
-			},
-		  ],
-		});
-	
-		// Clear the switching status
-		switchingStatus.textContent = '';
-	
-		// Enable buttons after successful network switch
-		connectButton.disabled = false;
-		connectButton.style.color = 'black';
-		approveButton.disabled = false;
-		approveButton.style.color = 'black';
-		sendFromButton.disabled = false;
-		sendFromButton.style.color = 'black';
-		console.log('Buttons enabled after successful network switch.');
-	
-		// Update status to show connected user address
-		const accounts = await ethereum.request({ method: 'eth_accounts' });
-		if (accounts.length > 0) {
-		  const userAddress = accounts[0];
-		  updateStatus('Connected to MetaMask. User Address: ' + userAddress, 'grey', true);
-		} else {
-		  updateStatus('Connected to MetaMask', 'grey', true);
-		}
-	  } catch (error) {
-		console.error('Error switching to BSC Testnet:', error);
-		showError(getErrorMessage(error));
-		switchingStatus.textContent = ''; // Clear the switching status on error
-		updateStatus('Error: Cannot proceed further due to user. Please refresh the page to try again.', 'red');
-	  }
-	}
-	
-	function updateStatus(message, color, disableButton = false) {
-	  const statusField = document.getElementById('statusField');
-	  const connectButton = document.getElementById('connectButton');
-	  statusField.textContent = message;
-	  statusField.style.color = color;
-	  if (disableButton) {
-		connectButton.textContent = 'Connected to MetaMask';
-		connectButton.style.color = 'grey';
-		connectButton.disabled = true;
-	  }
-	}
-	
-	function showError(message) {
-	  const statusField = document.getElementById('statusField');
-	  statusField.textContent = 'Error: ' + message;
-	  statusField.style.color = 'red';
-	}
-	</script>
+    // Function to get a concise human-readable error message
+    function getErrorMessage(error) {
+        if (error.code === 4001) {
+            return 'User rejected the connection request.';
+        }
+        return 'An unknown error occurred. Please try again.';
+    }
+
+    // Wait for the entire website to load before enabling the button and checking connection
+    window.addEventListener('load', async function () {
+        const connectButton = document.getElementById('connectButton');
+        const statusField = document.getElementById('statusField');
+        const switchingStatus = document.getElementById('switchingStatus');
+
+        console.log('Website loaded. Enabling connect button...');
+        
+        // Enable the Connect to MetaMask button now that the website has finished loading
+        connectButton.removeAttribute('disabled');
+        connectButton.style.color = 'black'; // Set font color to black when enabled
+
+        // Check MetaMask connection status
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                const accounts = await ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    const userAddress = accounts[0];
+                    const chainId = await ethereum.request({ method: 'eth_chainId' });
+
+                    console.log('MetaMask connection detected. User address:', userAddress);
+
+                    if (chainId === '0x61') {
+                        updateStatus('Connected to MetaMask. User Address: ' + userAddress, 'grey', true);
+                    } else {
+                        console.log('Connected to MetaMask. User Address:', userAddress);
+                        console.log('Switching to BSC Testnet...');
+                        await switchToBscTestnet();
+                    }
+                } else {
+                    console.log('MetaMask connection detected but no accounts.');
+                    updateStatus('Not connected to MetaMask', 'white');
+                }
+            } catch (error) {
+                console.error('Error checking MetaMask connection:', error);
+                showError(getErrorMessage(error));
+            }
+        } else {
+            showError('MetaMask is not available. Please install MetaMask.');
+        }
+    });
+
+    async function toggleConnection() {
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                const accounts = await ethereum.request({ method: 'eth_accounts' });
+
+                if (accounts.length === 0) {
+                    console.log('Connecting to MetaMask...');
+                    // Connect to MetaMask
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    const userAddress = accounts[0];
+                    console.log('Connected to MetaMask. User Address:', userAddress);
+
+                    updateStatus('Connected to MetaMask. User Address: ' + userAddress, 'grey', true);
+                    document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
+                    document.getElementById('connectButton').disabled = true; // Disable the button
+                } else {
+                    const chainId = await ethereum.request({ method: 'eth_chainId' });
+                    if (chainId !== '0x61') {
+                        console.log('Already connected to MetaMask but not on BSC Testnet.');
+                        await switchToBscTestnet();
+                    } else {
+                        console.log('Already connected to MetaMask.');
+                    }
+                }
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
+                showError(getErrorMessage(error));
+            }
+        } else {
+            showError('MetaMask is not available. Please install MetaMask.');
+        }
+    }
+
+    async function switchToBscTestnet() {
+        const connectButton = document.getElementById('connectButton');
+        const approveButton = document.getElementById('approveButton');
+        const sendFromButton = document.getElementById('sendFromButton');
+        const statusField = document.getElementById('statusField');
+        const switchingStatus = document.getElementById('switchingStatus'); // This element needs to exist in your HTML
+
+        try {
+            // Disable buttons during network switch attempt
+            connectButton.disabled = true;
+            approveButton.disabled = true;
+            sendFromButton.disabled = true;
+            connectButton.style.color = 'grey';
+            approveButton.style.color = 'grey';
+            sendFromButton.style.color = 'grey';
+            console.log('Buttons disabled during network switch attempt.');
+
+            updateStatus('Switching to BSC Test Net...', 'white');
+            console.log('Switching network to BSC Testnet...');
+
+            // Switch network and handle cancellation
+            const result = await ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                    {
+                        chainId: '0x61', // BSC Testnet chain ID (97 in decimal)
+                        chainName: 'BSC Testnet',
+                        nativeCurrency: {
+                            name: 'tBNB',
+                            symbol: 'tBNB',
+                            decimals: 18,
+                        },
+                        rpcUrls: ['https://bsc-testnet.publicnode.com'],
+                        blockExplorerUrls: ['https://testnet.bscscan.com'],
+                    },
+                ],
+            });
+
+            if (result === null || result === undefined) {
+                // Network switch was canceled by the user
+                console.log('Network switch canceled by user.');
+                switchingStatus.textContent = 'Network switch canceled. Please refresh the page.';
+                return;
+            }
+
+            // Clear the switching status after a successful network switch
+            console.log('Network switch successful.');
+            switchingStatus.textContent = '';
+
+            // Enable buttons after successful network switch
+            connectButton.disabled = false;
+            connectButton.style.color = 'black';
+            approveButton.disabled = false;
+            approveButton.style.color = 'black';
+            sendFromButton.disabled = false;
+            sendFromButton.style.color = 'black';
+            console.log('Buttons enabled after successful network switch.');
+
+            // Update status to show connected user address
+            const accounts = await ethereum.request({ method: 'eth_accounts' });
+            if (accounts.length > 0) {
+                const userAddress = accounts[0];
+                updateStatus('Connected to MetaMask. User Address: ' + userAddress, 'grey', true);
+            } else {
+                updateStatus('Connected to MetaMask', 'grey', true);
+            }
+        } catch (error) {
+            console.error('Error switching to BSC Testnet:', error);
+            showError(getErrorMessage(error));
+            switchingStatus.textContent = ''; // Clear the switching status on error
+            updateStatus('Error: Cannot proceed further due to user. Please refresh the page to try again.', 'red');
+        }
+    }
+
+    function updateStatus(message, color, disableButton = false) {
+        const statusField = document.getElementById('statusField');
+        const connectButton = document.getElementById('connectButton');
+        statusField.textContent = message;
+        statusField.style.color = color;
+        if (disableButton) {
+            connectButton.textContent = 'Connected to MetaMask';
+            connectButton.style.color = 'grey';
+            connectButton.disabled = true;
+        }
+    }
+
+    function showError(message) {
+        const statusField = document.getElementById('statusField');
+        statusField.textContent = 'Error: ' + message;
+        statusField.style.color = 'red';
+        console.error('Error:', message);
+    }
+</script>
+
+
 
 <script>
   async function approveSpend() {
