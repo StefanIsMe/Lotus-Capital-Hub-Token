@@ -47,8 +47,6 @@
     }
 </script>
 
-
-
 <div style="margin-top: 20px;">
     <!-- Step 4: Complete SendFrom -->
     <h2>Step 5: Complete SendFrom</h2>
@@ -503,8 +501,9 @@
     }
   }
 </script>
-<script>
 
+<script>
+<!-- Step 4: Complete SendFrom -->
 async function sendFrom() {
     try {
       if (typeof window.ethereum === 'undefined') {
@@ -1752,7 +1751,6 @@ async function sendFrom() {
       showError('Transaction error. Please try again.');
     }
   }
-
 
   function showError(message) {
     alert(message);
