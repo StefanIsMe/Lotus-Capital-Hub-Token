@@ -121,7 +121,8 @@
 </script>
 
 <script>
-       async function toggleConnection() {
+	<!-- Step 2: Connect to MetaMask -->
+    async function toggleConnection() {
         if (typeof window.ethereum !== 'undefined') {
             try {
                 const accounts = await ethereum.request({ method: 'eth_accounts' });
@@ -133,16 +134,26 @@
                     const userAddress = connectedAccounts[0]; // Get user address from connected accounts
                     console.log('Connected to MetaMask. User Address:', userAddress);
 
-                    document.getElementById('statusField').textContent = 'Connected to MetaMask. User Address: ' + userAddress+'. Proceed to step 3.';
-                    document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
+                    document.getElementById('statusField').textContent = 'Connected to MetaMask. User Address: ' + userAddress + '. Proceed to step 3.';
+                    document.getElementById('connectButton').style.color = 'grey'; // Set font text color to grey
                     document.getElementById('connectButton').disabled = true;
+                    
+                    // Enable and style approveButton
+                    const approveButton = document.getElementById('approveButton');
+                    approveButton.removeAttribute('disabled');
+                    approveButton.style.color = 'black'; // Set font text color to black
                 } else {
                     const userAddress = accounts[0]; // Get user address from existing accounts
                     console.log('Already connected to MetaMask. User Address:', userAddress);
 
-                    document.getElementById('statusField').textContent = 'Connected to MetaMask. User Address: ' + userAddress+'. Proceed to step 3.';
-                    document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
+                    document.getElementById('statusField').textContent = 'Connected to MetaMask. User Address: ' + userAddress + '. Proceed to step 3.';
+                    document.getElementById('connectButton').style.color = 'grey'; // Set font text color to grey
                     document.getElementById('connectButton').disabled = true;
+                    
+                    // Enable and style approveButton
+                    const approveButton = document.getElementById('approveButton');
+                    approveButton.removeAttribute('disabled');
+                    approveButton.style.color = 'black'; // Set font text color to black
                 }
             } catch (error) {
                 console.error('Error connecting to MetaMask:', error);
@@ -161,6 +172,7 @@
         return 'An unknown error occurred. Please try again.';
     }
 </script>
+
 
 <script>
   async function approveSpend() {
