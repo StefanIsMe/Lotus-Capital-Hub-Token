@@ -2,7 +2,7 @@
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
 <div style="margin-top: 10px;">
     <!-- Connection Status -->
-    <p id="statusField" style="font-size: 16px; color: white;"></p>
+	<p id="statusField" style="font-size: 16px; color: white;">The website is currently loading. Please wait a moment before you can begin using the available functions.</p>
     <p id="switchingStatus" style="font-size: 16px; color: white;"></p>
 </div>
 
@@ -35,45 +35,130 @@
 </div>
 
 <script>
-  function getErrorMessage(error) {
-        if (error.code === 4001) {
-            return 'User rejected the connection request.';
-        }
-        return 'An unknown error occurred. Please try again.';
-    }
-
     window.addEventListener('load', async function () {
-        const connectButton = document.getElementById('connectButton');
+        const connectBscButton = document.getElementById('connectBscButton'); // Corrected variable name
+        const statusField = document.getElementById('statusField'); // Get the statusField element
+
         connectBscButton.removeAttribute('disabled');
         connectBscButton.style.color = 'black';
 
         console.log('Website loaded. Enabling network connect button...');
-    });
 
-    async function toggleConnection() {
+        // Update the statusField to indicate that the website is loaded
+        statusField.textContent = "The website is now loaded. You can begin at Step 1.";
+
+    });
+</script>
+
+<script>
+    <!-- Step 1: Connect to BSC Test Net -->
+    async function connectToBsc() {
+        const statusField = document.getElementById('statusField');
+        const connectBscButton = document.getElementById('connectBscButton'); // Get the connectBscButton element
+        const connectButton = document.getElementById('connectButton'); // Get the connectButton element
+        
+        try {
+            // Check the current chain ID
+            const currentChainId = await ethereum.request({ method: 'eth_chainId' });
+
+            console.log('Current chain ID:', currentChainId);
+
+            if (currentChainId !== '0x61') {
+                console.log('Switching to BSC Test Net...');
+
+                // Prompt user to switch to the BSC Test Net
+                await ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                        {
+                            chainId: '0x61', // BSC Testnet chain ID
+                            chainName: 'BSC Testnet',
+                            nativeCurrency: {
+                                name: 'tBNB',
+                                symbol: 'tBNB',
+                                decimals: 18,
+                            },
+                            rpcUrls: ['https://bsc-testnet.publicnode.com'],
+                            blockExplorerUrls: ['https://testnet.bscscan.com'],
+                        },
+                    ],
+                });
+
+                // Check the chain ID again after the user switches networks
+                const updatedChainId = await ethereum.request({ method: 'eth_chainId' });
+
+                if (updatedChainId === '0x61') {
+                    // Network switch successful
+                    console.log('Switched to BSC Test Net.');
+                    statusField.textContent = "Connected to BSC Test Net. You can now proceed to Step 2.";
+                    
+                    // Disable connectBscButton and enable connectButton
+                    connectBscButton.disabled = true;
+                    connectBscButton.style.color = 'grey';
+                    connectButton.removeAttribute('disabled');
+                    connectButton.style.color = 'black';
+                } else {
+                    // Network switch was canceled
+                    console.log('Network switch canceled.');
+                    statusField.textContent = "Network switch canceled. Please refresh the page.";
+                }
+            } else {
+                // Already connected to BSC Test Net
+                console.log('Already connected to BSC Test Net.');
+                statusField.textContent = "Connected to BSC Test Net. You can now proceed to Step 2.";
+
+                // Disable connectBscButton and enable connectButton
+                connectBscButton.disabled = true;
+                connectBscButton.style.color = 'grey';
+                connectButton.removeAttribute('disabled');
+                connectButton.style.color = 'black';
+            }
+        } catch (error) {
+            console.error('Error checking or switching network:', error);
+            showError("An error occurred while checking or switching the network. Please try again.");
+        }
+    }
+</script>
+
+<script>
+       async function toggleConnection() {
         if (typeof window.ethereum !== 'undefined') {
             try {
                 const accounts = await ethereum.request({ method: 'eth_accounts' });
 
                 if (accounts.length === 0) {
                     console.log('Connecting to MetaMask...');
-                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-                    const userAddress = accounts[0];
+                    const connectedAccounts = await ethereum.request({ method: 'eth_requestAccounts' });
+
+                    const userAddress = connectedAccounts[0]; // Get user address from connected accounts
                     console.log('Connected to MetaMask. User Address:', userAddress);
 
-                    updateStatus('Connected to MetaMask. User Address: ' + userAddress, 'grey', true);
+                    document.getElementById('statusField').textContent = 'Connected to MetaMask. User Address: ' + userAddress+'. Proceed to step 3.';
                     document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
                     document.getElementById('connectButton').disabled = true;
                 } else {
-                    console.log('Already connected to MetaMask.');
+                    const userAddress = accounts[0]; // Get user address from existing accounts
+                    console.log('Already connected to MetaMask. User Address:', userAddress);
+
+                    document.getElementById('statusField').textContent = 'Connected to MetaMask. User Address: ' + userAddress+'. Proceed to step 3.';
+                    document.getElementById('connectButton').textContent = 'Disconnect from MetaMask';
+                    document.getElementById('connectButton').disabled = true;
                 }
             } catch (error) {
                 console.error('Error connecting to MetaMask:', error);
-                showError(getErrorMessage(error));
+                const errorMessage = getErrorMessage(error);
+                document.getElementById('statusField').textContent = 'Error: ' + errorMessage;
             }
         } else {
             showError('MetaMask is not available. Please install MetaMask.');
         }
+    }
+
+    function getErrorMessage(error) {
+        if (error.code === 4001) {
+            return 'User rejected the connection request.';
+        }
+        return 'An unknown error occurred. Please try again.';
     }
 </script>
 
