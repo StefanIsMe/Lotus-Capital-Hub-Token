@@ -24,8 +24,30 @@
     <!-- Step 3: Approve Spend -->
     <h2>Step 3: Approve Spend</h2>
     <p>After connecting, you'll need to approve the spend.</p>
+    <label for="tokenAmountInput">Enter the amount of tokens to spend:</label>
+    <input type="text" id="tokenAmountInput" style="font-size: 16px; width: 180px;" placeholder="Enter amount" required><br>
     <button id="approveButton" style="background-color: white; font-size: 30px; color: grey;" onclick="approveSpend()" disabled>Approve Spend</button>
 </div>
+
+<script>
+    // Add event listener to input field
+    const tokenAmountInput = document.getElementById('tokenAmountInput');
+    tokenAmountInput.addEventListener('input', formatInputValue);
+
+    // Function to format input value with commas
+    function formatInputValue() {
+        const inputValue = tokenAmountInput.value.replace(/,/g, ''); // Remove existing commas
+        const formattedValue = numberWithCommas(inputValue);
+        tokenAmountInput.value = formattedValue;
+    }
+
+    // Function to add commas to numbers
+    function numberWithCommas(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+</script>
+
+
 
 <div style="margin-top: 20px;">
     <!-- Step 4: Complete SendFrom -->
@@ -175,7 +197,8 @@
 
 
 <script>
-  async function approveSpend() {
+	<!-- Step 3: Approve Spend -->
+  	async function approveSpend() {
     try {
       if (typeof window.ethereum === 'undefined') {
         throw new Error('MetaMask is not available. Please install MetaMask.');
