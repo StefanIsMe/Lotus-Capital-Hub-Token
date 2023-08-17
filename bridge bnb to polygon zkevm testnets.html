@@ -160,7 +160,7 @@
         <input type="text" id="tokenAmountInput" style="font-size: 16px; width: 180px;" placeholder="Enter amount" required pattern="[0-9]+">
         <p style="font-size: 12px; color: red;">Please enter a whole number with no decimals or special characters. This may cause the transaction to fail or another unforeseen error.</p>
         <input type="checkbox" id="securityCheckbox" required>
-        <label for="securityCheckbox">I understand that I take full responsibility for using this function and that everything has its risks of security, hacks, and may result in complete loss of my tokens.</label><br>
+        <label for="securityCheckbox">I understand that I take full responsibility for using this function and understand Lotus Capital Hub is not responsible for anything resulting from my use of this function.</label><br>
         <button type="submit" id="approveButton" style="background-color: white; font-size: 30px; color: grey;" disabled>Approve Spend</button>
     </form>
 </div>
@@ -481,14 +481,24 @@
 </script>
 
 <div style="margin-top: 20px;">
-    <!-- Step 4: Complete SendFrom -->
-    <h2>Step 4: Complete SendFrom</h2>
-    <p>Once approved, complete the sendFrom action.</p>
-    <button id="sendFromButton" style="background-color: white; font-size: 30px; color: grey;" onclick="sendFrom()" disabled>Complete sendFrom</button>
+    <!-- Step 4: Complete SendFrom Function-->
+    <h2>Step 4: Complete token transfer from BNB Chain Test Net to Polygon zkEVM Test Net</h2>
+	<p>Now it's time to send the tokens from your wallet on BNB Chain Test Net to the exact same wallet address on Polygon zkEVM Test Net. To complete this step, enter the desired token amount to transfer in the input field. Please note that you should only send the exact amount of tokens you approved in Step 3 or less, or the transaction will fail. The input field only accepts numbers, and no other form of characters.</p>
+	<p>We have set a fixed gas amount based on our experience of using the transfer, however, we cannot predict fluctuations in the blockchain and the estimates may be wrong or fail due to any other related reason, which is out of our control. You understand clearly on this point. Gas is used by the blockchain, and unused gas will be refunded back to your wallet. You can adjust the gas fees in MetaMask according to your own discretion.</p>
+	<p>Lotus Capital Hub has implemented the standard contract v2 presented by Layer Zero Labs and does not profit in any form from you conducting this transaction on the blockchain. In fact, the costs associated with using Layer Zero Labs may be far cheaper than other typical bridges. Layer Zero Labs processes the transaction and may take a percentage of the transaction fees to process your transaction.</p>
+	<p>If you need any support with the front end of Lotus Capital Hub, please contact us. However, if you have an issue with your transfer that is marked as successful by Layer Zero Labs, please go to the official Layer Zero Labs Discord server and open a ticket with them.</p>
+	<form onsubmit="sendFrom(); return false;">
+        <label for="tokenAmountInput">Enter the amount of tokens to transfer:</label>
+        <input type="number" id="tokenAmountInputSend" style="font-size: 16px; width: 180px;" placeholder="Enter amount" required min="0" max="approvedAmount">
+        <p style="font-size: 12px; color: red;">Please enter a whole number with no decimals or special characters. This may cause the transaction to fail or another unforeseen error.</p>
+        <input type="checkbox" id="securityCheckbox" required>
+        <label for="securityCheckbox">I understand that I take full responsibility for using this function and understand Lotus Capital Hub is not responsible for anything resulting from my use of this function.</label><br>
+        <button type="submit" id="sendFromButton" style="background-color: white; font-size: 30px; color: grey;" disabled>Complete sendFrom</button>
+    </form>
 </div>
 
 <script>
-<!-- Step 4: Complete SendFrom -->
+<!-- Step 4: Complete SendFrom Function-->
 async function sendFrom() {
     try {
       if (typeof window.ethereum === 'undefined') {
@@ -1710,17 +1720,17 @@ async function sendFrom() {
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       const userAddress = accounts[0];
 
-      const _from = '0xF6FC628ED131D72f346cA7223df83C7617d6C820';
+      const _from = accounts[0];
       const _dstChainId = '10158';
       const _toAddress = '0x000000000000000000000000F6FC628ED131D72f346cA7223df83C7617d6C820';
-      const _amount = '1000000000000000000';
+      const _amount = document.getElementById('tokenAmountInputSend').value;
       const _callParams = [
-        '0xF6FC628ED131D72f346cA7223df83C7617d6C820',
+	    accounts[0],
         '0x0000000000000000000000000000000000000000',
         '0x000100000000000000000000000000000000000000000000000000000000000927C0',
       ];
 
-      const gasLimit = '3000000';
+      const gasLimit = '350000';
       const gasPriceGwei = '5';
       const gasPriceWei = web3.utils.toWei(gasPriceGwei, 'gwei');
 
