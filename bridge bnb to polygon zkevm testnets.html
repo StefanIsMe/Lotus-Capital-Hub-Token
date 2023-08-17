@@ -465,7 +465,12 @@
 
 	  const transaction = await contract.methods.approve(spender, baseUnitAmount).send({ from: userAddress, gas: gasAmount });
 
-      console.log('Transaction receipt:', transaction);
+      console.log('Transaction success receipt:', transaction);
+
+	  // Transaction was successful, you can update the UI or show a success message here
+	  document.getElementById('sendFromButton').removeAttribute('disabled');
+	  sendFromButton.style.color = 'black';
+	  statusField.textContent = "Approval was successful. Please proceed to step 4.";
 
       // Transaction was successful, you can update the UI or show a success message here
     } catch (error) {
@@ -477,7 +482,7 @@
 
 <div style="margin-top: 20px;">
     <!-- Step 4: Complete SendFrom -->
-    <h2>Step 5: Complete SendFrom</h2>
+    <h2>Step 4: Complete SendFrom</h2>
     <p>Once approved, complete the sendFrom action.</p>
     <button id="sendFromButton" style="background-color: white; font-size: 30px; color: grey;" onclick="sendFrom()" disabled>Complete sendFrom</button>
 </div>
