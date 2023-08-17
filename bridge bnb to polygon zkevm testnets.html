@@ -1722,8 +1722,18 @@ async function sendFrom() {
 
       const _from = accounts[0];
       const _dstChainId = '10158';
-      const _toAddress = '0x000000000000000000000000F6FC628ED131D72f346cA7223df83C7617d6C820';
-      const _amount = document.getElementById('tokenAmountInputSend').value;
+
+	  const _toAddress = ethers.utils.keccak256(accounts[0]);
+
+	  // get the amount in ether from the input element 
+	  const _amount = document.getElementById('tokenAmountInputSend').value;  
+	  // convert the amount in ether to wei
+	  const wei = web3.utils.toWei(_amount, 'ether'); 
+	  // convert the amount in wei back to ether
+	  const ether = web3.utils.fromWei(wei, 'ether');
+
+
+
       const _callParams = [
 	    accounts[0],
         '0x0000000000000000000000000000000000000000',
