@@ -13,63 +13,6 @@
     <button id="connectBscButton" style="background-color: white; font-size: 30px; color: grey;" onclick="connectToBsc()" disabled>Connect to BSC Test Net</button>
 </div>
 
-<div style="margin-top: 20px;">
-    <!-- Step 2: Connect to MetaMask -->
-    <h2>Step 2: Connect to MetaMask</h2>
-    <p>Click the button below to connect your MetaMask wallet.</p>
-    <button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="toggleConnection()" disabled>Connect to MetaMask</button>
-</div>
-
-<div style="margin-top: 20px;">
-    <!-- Step 3: Approve Spend -->
-    <h2>Step 3: Approve Spend</h2>
-    <p>After connecting, you'll need to approve the spend.</p>
-    <label for="tokenAmountInput">Enter the amount of tokens to spend:</label>
-    <input type="text" id="tokenAmountInput" style="font-size: 16px; width: 180px;" placeholder="Enter amount" required><br>
-    <button id="approveButton" style="background-color: white; font-size: 30px; color: grey;" onclick="approveSpend()" disabled>Approve Spend</button>
-</div>
-
-<script>
-    // Add event listener to input field
-    const tokenAmountInput = document.getElementById('tokenAmountInput');
-    tokenAmountInput.addEventListener('input', formatInputValue);
-
-    // Function to format input value with commas
-    function formatInputValue() {
-        const inputValue = tokenAmountInput.value.replace(/,/g, ''); // Remove existing commas
-        const formattedValue = numberWithCommas(inputValue);
-        tokenAmountInput.value = formattedValue;
-    }
-
-    // Function to add commas to numbers
-    function numberWithCommas(number) {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-</script>
-
-<div style="margin-top: 20px;">
-    <!-- Step 4: Complete SendFrom -->
-    <h2>Step 5: Complete SendFrom</h2>
-    <p>Once approved, complete the sendFrom action.</p>
-    <button id="sendFromButton" style="background-color: white; font-size: 30px; color: grey;" onclick="sendFrom()" disabled>Complete sendFrom</button>
-</div>
-
-<script>
-    window.addEventListener('load', async function () {
-        const connectBscButton = document.getElementById('connectBscButton'); // Corrected variable name
-        const statusField = document.getElementById('statusField'); // Get the statusField element
-
-        connectBscButton.removeAttribute('disabled');
-        connectBscButton.style.color = 'black';
-
-        console.log('Website loaded. Enabling network connect button...');
-
-        // Update the statusField to indicate that the website is loaded
-        statusField.textContent = "The website is now loaded. You can begin at Step 1.";
-
-    });
-</script>
-
 <script>
     <!-- Step 1: Connect to BSC Test Net -->
     async function connectToBsc() {
@@ -140,6 +83,13 @@
     }
 </script>
 
+<div style="margin-top: 20px;">
+    <!-- Step 2: Connect to MetaMask -->
+    <h2>Step 2: Connect to MetaMask</h2>
+    <p>Click the button below to connect your MetaMask wallet.</p>
+    <button id="connectButton" style="background-color: white; font-size: 30px; color: grey;" onclick="toggleConnection()" disabled>Connect to MetaMask</button>
+</div>
+
 <script>
 	<!-- Step 2: Connect to MetaMask -->
     async function toggleConnection() {
@@ -193,6 +143,18 @@
     }
 </script>
 
+
+<div style="margin-top: 20px;">
+    <!-- Step 3: Approve Spend -->
+    <h2>Step 3: Approve Spend</h2>
+    <p>After connecting, you'll need to approve the spend.</p>
+    <form onsubmit="approveSpend(); return false;">
+        <label for="tokenAmountInput">Enter the amount of tokens to spend:</label>
+        <input type="text" id="tokenAmountInput" style="font-size: 16px; width: 180px;" placeholder="Enter amount" required pattern="[0-9]+">
+        <p style="font-size: 12px; color: red;">Please enter a whole number with no decimals or special characters. This may cause the transaction to fail or another unforeseen error.</p>
+        <button type="submit" id="approveButton" style="background-color: white; font-size: 30px; color: grey;" disabled>Approve Spend</button>
+    </form>
+</div>
 
 <script>
 	<!-- Step 3: Approve Spend -->
@@ -488,9 +450,10 @@
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       const userAddress = accounts[0];
       const spender = '0xA1894b6d732B898dD44382f352aF0Ccc75CfAA58';
-      const amount = '1000000000000000000';
+      const amount = document.getElementById('tokenAmountInput').value;
+      const baseUnitAmount = web3.utils.toWei(amount, 'ether');
 
-      const transaction = await contract.methods.approve(spender, amount).send({ from: userAddress });
+      const transaction = await contract.methods.approve(spender, baseUnitAmount).send({ from: userAddress });
 
       console.log('Transaction receipt:', transaction);
 
@@ -501,6 +464,13 @@
     }
   }
 </script>
+
+<div style="margin-top: 20px;">
+    <!-- Step 4: Complete SendFrom -->
+    <h2>Step 5: Complete SendFrom</h2>
+    <p>Once approved, complete the sendFrom action.</p>
+    <button id="sendFromButton" style="background-color: white; font-size: 30px; color: grey;" onclick="sendFrom()" disabled>Complete sendFrom</button>
+</div>
 
 <script>
 <!-- Step 4: Complete SendFrom -->
@@ -1755,4 +1725,21 @@ async function sendFrom() {
   function showError(message) {
     alert(message);
   }
+</script>
+
+
+<script>
+    window.addEventListener('load', async function () {
+        const connectBscButton = document.getElementById('connectBscButton'); // Corrected variable name
+        const statusField = document.getElementById('statusField'); // Get the statusField element
+
+        connectBscButton.removeAttribute('disabled');
+        connectBscButton.style.color = 'black';
+
+        console.log('Website loaded. Enabling network connect button...');
+
+        // Update the statusField to indicate that the website is loaded
+        statusField.textContent = "The website is now loaded. You can begin at Step 1.";
+
+    });
 </script>
