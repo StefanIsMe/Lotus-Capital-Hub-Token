@@ -1,5 +1,6 @@
 <!-- HTML -->
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
+<script async src="https://cdn.ethers.io/lib/ethers-5.4.umd.min.js"></script>
 <div style="margin-top: 10px;">
     <!-- Connection Status -->
 	<p id="statusField" style="font-size: 16px; color: white;">The website is currently loading. Please wait a moment before you can begin using the available functions.</p>
@@ -458,12 +459,11 @@
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       const userAddress = accounts[0];
       const spender = '0xA1894b6d732B898dD44382f352aF0Ccc75CfAA58';
-      const amount = document.getElementById('tokenAmountInput').value;
-      const baseUnitAmount = web3.utils.toWei(amount, 'ether');
+      const amount = web3.utils.toWei(document.getElementById('tokenAmountInput').value, 'ether');
 
 	  const gasAmount = 50000;
 
-	  const transaction = await contract.methods.approve(spender, baseUnitAmount).send({ from: userAddress, gas: gasAmount });
+	  const transaction = await contract.methods.approve(spender, amount).send({ from: userAddress, gas: gasAmount });
 
       console.log('Transaction success receipt:', transaction);
 
@@ -480,35 +480,15 @@
   }
 </script>
 
-<div style="margin-top: 20px;">
-    <!-- Step 4: Complete SendFrom Function-->
-    <h2>Step 4: Complete token transfer from BNB Chain Test Net to Polygon zkEVM Test Net</h2>
-	<p>Now it's time to send the tokens from your wallet on BNB Chain Test Net to the exact same wallet address on Polygon zkEVM Test Net. To complete this step, enter the desired token amount to transfer in the input field. Please note that you should only send the exact amount of tokens you approved in Step 3 or less, or the transaction will fail. The input field only accepts numbers, and no other form of characters.</p>
-	<p>We have set a fixed gas amount based on our experience of using the transfer, however, we cannot predict fluctuations in the blockchain and the estimates may be wrong or fail due to any other related reason, which is out of our control. You understand clearly on this point. Gas is used by the blockchain, and unused gas will be refunded back to your wallet. You can adjust the gas fees in MetaMask according to your own discretion.</p>
-	<p>Lotus Capital Hub has implemented the standard contract v2 presented by Layer Zero Labs and does not profit in any form from you conducting this transaction on the blockchain. In fact, the costs associated with using Layer Zero Labs may be far cheaper than other typical bridges. Layer Zero Labs processes the transaction and may take a percentage of the transaction fees to process your transaction.</p>
-	<p>If you need any support with the front end of Lotus Capital Hub, please contact us. However, if you have an issue with your transfer that is marked as successful by Layer Zero Labs, please go to the official Layer Zero Labs Discord server and open a ticket with them.</p>
-	<form onsubmit="sendFrom(); return false;">
-        <label for="tokenAmountInput">Enter the amount of tokens to transfer:</label>
-        <input type="number" id="tokenAmountInputSend" style="font-size: 16px; width: 180px;" placeholder="Enter amount" required min="0" max="approvedAmount">
-        <p style="font-size: 12px; color: red;">Please enter a whole number with no decimals or special characters. This may cause the transaction to fail or another unforeseen error.</p>
-        <input type="checkbox" id="securityCheckbox" required>
-        <label for="securityCheckbox">I understand that I take full responsibility for using this function and understand Lotus Capital Hub is not responsible for anything resulting from my use of this function.</label><br>
-        <button type="submit" id="sendFromButton" style="background-color: white; font-size: 30px; color: grey;" disabled>Complete sendFrom</button>
-    </form>
-</div>
+<div style=“margin-top: 20px;”> 
+	<h2>Step 4: Complete token transfer from BNB Chain Test Net to Polygon zkEVM Test Net</h2> <p>Now it’s time to send the tokens from your wallet on BNB Chain Test Net to the exact same wallet address on Polygon zkEVM Test Net. To complete this step, enter the desired token amount to transfer in the input field. Please note that you should only send the exact amount of tokens you approved in Step 3 or less, or the transaction will fail. The input field only accepts numbers, and no other form of characters.</p> <p>We have set a fixed gas amount based on our experience of using the transfer, however, we cannot predict fluctuations in the blockchain and the estimates may be wrong or fail due to any other related reason, which is out of our control. You understand clearly on this point. Gas is used by the blockchain, and unused gas will be refunded back to your wallet. You can adjust the gas fees in MetaMask according to your own discretion.</p> <p>Lotus Capital Hub has implemented the standard contract v2 presented by Layer Zero Labs and does not profit in any form from you conducting this transaction on the blockchain. In fact, the costs associated with using Layer Zero Labs may be far cheaper than other typical bridges. Layer Zero Labs processes the transaction and may take a percentage of the transaction fees to process your transaction.</p> <p>If you need any support with the front end of Lotus Capital Hub, please contact us. However, if you have an issue with your transfer that is marked as successful by Layer Zero Labs, please go to the official Layer Zero Labs Discord server and open a ticket with them.</p> <form onsubmit=“sendFrom(); return false;”> <!-- Corrected typo here --> <label for=“tokenAmountInput”>Enter the amount of tokens to transfer:</label> <input type=“number” id=“tokenAmountInputSend” style=“font-size: 16px; width: 180px;” placeholder=“Enter amount” required min=“0” max=“approvedAmount”> <p style=“font-size: 12px; color: red;”>Please enter a whole number with no decimals or special characters. This may cause the transaction to fail or another unforeseen error.</p> <input type=“checkbox” id=“securityCheckbox” required> <label for=“securityCheckbox”>I understand that I take full responsibility for using this function and understand Lotus Capital Hub is not responsible for anything resulting from my use of this function.</label><br> <button type=“submit” id=“sendFromButton” style=“background-color: white; font-size: 30px; color: grey;” disabled>Complete sendFrom</button> </form> </div>
+<script> 
+async function sendFrom() { try { if (typeof window.ethereum === ‘undefined’) { throw new Error(‘MetaMask is not available. Please install MetaMask.’); }
 
-<script>
-<!-- Step 4: Complete SendFrom Function-->
-async function sendFrom() {
-    try {
-      if (typeof window.ethereum === 'undefined') {
-        throw new Error('MetaMask is not available. Please install MetaMask.');
-      }
-
-      const contractAddress = '0xA1894b6d732B898dD44382f352aF0Ccc75CfAA58';
-      const contractAbi = [
-	{
-		"inputs": [
+	const contractAddress = '0xA1894b6d732B898dD44382f352aF0Ccc75CfAA58';
+	const contractAbi = [
+  {
+	  "inputs": [
 			{
 				"internalType": "address",
 				"name": "_token",
@@ -1710,58 +1690,50 @@ async function sendFrom() {
 		],
 		"stateMutability": "view",
 		"type": "function"
-	}
-];
+	}  
+  ];
+  
+	// Use the latest version of web3 with the "eth.Contract" method
+	const web3 = new Web3(window.ethereum);
+	const contract = new web3.eth.Contract(contractAbi, contractAddress);
+  
+	const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+	const userAddress = accounts[0];
+  
+	const _from = accounts[0];
+	const _dstChainId = '10158';
+  
+	const _toAddress = ethers.utils.keccak256(accounts[0]);
+  
+		// Convert to hex
+		const _amount = web3.utils.toHex(web3.utils.toBN(document.getElementById('tokenAmountInputSend').value, 'ether'));
 
-      // Use the latest version of web3 with the "eth.Contract" method
-      const web3 = new Web3(window.ethereum);
-      const contract = new web3.eth.Contract(contractAbi, contractAddress);
-
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-      const userAddress = accounts[0];
-
-      const _from = accounts[0];
-      const _dstChainId = '10158';
-
-	  const _toAddress = ethers.utils.keccak256(accounts[0]);
-
-	  // get the amount in ether from the input element 
-	  const _amount = document.getElementById('tokenAmountInputSend').value;  
-	  // convert the amount in ether to wei
-	  const wei = web3.utils.toWei(_amount, 'ether'); 
-	  // convert the amount in wei back to ether
-	  const ether = web3.utils.fromWei(wei, 'ether');
-
-
-
-      const _callParams = [
-	    accounts[0],
-        '0x0000000000000000000000000000000000000000',
-        '0x000100000000000000000000000000000000000000000000000000000000000927C0',
-      ];
-
-      const gasLimit = '350000';
-      const gasPriceGwei = '5';
-      const gasPriceWei = web3.utils.toWei(gasPriceGwei, 'gwei');
-
-      const transaction = await contract.methods
-        .sendFrom(_from, _dstChainId, _toAddress, _amount, _callParams)
-        .send({ from: userAddress, gas: gasLimit, gasPrice: gasPriceWei, value: web3.utils.toWei('0.0013', 'ether') });
-
-      console.log('Transaction receipt:', transaction);
-
-      // Transaction was successful, you can update the UI or show a success message here
-    } catch (error) {
-      console.error('Transaction error:', error);
-      showError('Transaction error. Please try again.');
-    }
+	const _callParams = [
+	  accounts[0],
+	  '0x0000000000000000000000000000000000000000',
+	  '0x0001000000000000000000000000000000000000000000000000000000000927C0',
+	];
+  
+	const gasLimit = '350000';
+	const gasPriceGwei = '5';
+	const gasPriceWei = web3.utils.toWei(gasPriceGwei, 'gwei');
+  
+	const transaction = await contract.methods
+	  .sendFrom(_from, _dstChainId, _toAddress, _amount, _callParams)
+	  .send({ from: userAddress, gas: gasLimit, gasPrice: gasPriceWei, value: web3.utils.toWei('0.0019', 'ether') });
+  
+	console.log('Transaction receipt:', transaction);
+  
+	// Transaction was successful, you can update the UI or show a success message here
+  } catch (error) {
+	console.error('Transaction error:', error);
+	showError('Transaction error. Please try again.');
   }
-
-  function showError(message) {
-    alert(message);
   }
-</script>
-
+  
+  function showError(message) { alert(message); } </script>
+  
+  <script>
 
 <script>
     window.addEventListener('load', async function () {
