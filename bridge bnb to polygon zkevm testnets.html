@@ -463,7 +463,7 @@
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       const userAddress = accounts[0];
       const spender = '0xA1894b6d732B898dD44382f352aF0Ccc75CfAA58';
-      const amount = web3.utils.toWei(document.getElementById('tokenAmountInput').value, 'ether');
+	  const amount = document.getElementById('tokenAmountInput').value+'000000000000000000';
 
 	  const gasAmount = 50000;
 
@@ -1734,10 +1734,14 @@
 	  
 			const _toAddress = ethers.utils.keccak256(accounts[0]);
 
-			// Save the value from the input field to _amount work
-			const _amount = document.getElementById('tokenAmountInputSend').value;
+    	// Save the value from the input field to _amount
+		const _amount = document.getElementById('tokenAmountInputSend').value+'000000000000000000'; 
 
-			console.log('Amount:', _amount);
+
+		console.log('Amount:', _amount);
+
+
+
 
 
 			const _callParams = [
